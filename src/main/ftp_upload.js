@@ -5,6 +5,7 @@ let server = http.createServer(expressApp);
 let client = require('ftp');
 let fs = require('fs');
 let talk = '';
+let currentPath = '';
 const dataOk = {code: '0000000', msg: '请求处理成功'};
 
 expressApp.get('/startFtp', function(req, res, next) {
@@ -14,8 +15,10 @@ expressApp.get('/startFtp', function(req, res, next) {
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
 
     startFtp (req.query, function (data) {
+        getCurrentPath();
         let resData = Object.assign({}, dataOk);
         resData.data = data
+        resData.currentPath = currentPath
         res.send(resData);
     })
 
@@ -29,8 +32,10 @@ expressApp.get('/changePath', function (req, res, next) {
 
     let path = req.query.path;
     changePath(path, function (data) {
+        getCurrentPath();
         let resData = Object.assign({}, dataOk);
         resData.data = data
+        resData.currentPath = currentPath
         res.send(resData);
     })
 })
@@ -64,4 +69,11 @@ let getFileDir = function (cb) {
     })
 }
 
+let getCurrentPath = function () {
+    talk.pwd(function (err, dir) {
+        if (err) throw err;
+        console.log(dir);
+        currentPath = dir
+    })
+}
 server.listen(3009)
