@@ -1,4 +1,4 @@
-# cloudwalk-ftp-app
+# electron-ftp-app
 
 > An electron-vue project
 
