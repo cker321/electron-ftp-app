@@ -1,5 +1,5 @@
 {
-  "name": "cloudwalk-ftp-app",
+  "name": "electron-ftp-app",
   "version": "0.0.1",
   "author": "Zhurui <zhurui@cloudwalk.cn>",
   "description": "An electron-vue project",
