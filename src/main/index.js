@@ -20,11 +20,13 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     height: 663,
     useContentSize: true,
-    width: 1400
+    width: 1400,
+    webPreferences: {webSecurity: false}
   })
 
   mainWindow.loadURL(winURL)
 
+  mainWindow.openDevTools();
   mainWindow.on('closed', () => {
     mainWindow = null
   })
