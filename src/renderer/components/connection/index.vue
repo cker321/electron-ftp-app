@@ -32,7 +32,9 @@
                 </el-form-item>
             </el-row>
         </el-form>
-        <folder :defaultData="folderData" v-show="folderData.length"></folder>
+        <folder :defaultData="folderData"
+                :currentPath="currentPath"
+                v-show="folderData.length"></folder>
     </div>
 </template>
 
@@ -48,7 +50,8 @@
                     password: '123456',
                     port: 21
                 },
-                folderData: []
+                folderData: [],
+                currentPath: ''
             }
         },
         components: {
@@ -60,6 +63,7 @@
                     .then(res => {
                         console.log(res.data)
                         this.folderData = res.data;
+                        this.currentPath = res.currentPath;
                         // 跳转到folder
                         // this.$router.push({
                         //     name: 'folder'

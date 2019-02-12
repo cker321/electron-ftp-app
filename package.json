@@ -22,6 +22,11 @@
     "directories": {
       "output": "build"
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true
+    },
     "files": [
       "dist/electron/**/*"
     ],
@@ -54,6 +59,7 @@
     "axios": "^0.18.0",
     "element-ui": "^2.4.11",
     "ftp": "^0.3.10",
+    "multer": "^1.4.1",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1"
   },

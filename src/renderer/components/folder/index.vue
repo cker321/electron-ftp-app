@@ -1,10 +1,23 @@
 
 <template>
     <div class="folder">
-        <div class="src"></div>
+        <div class="currentPath">
+            <span v-for="(item, key) in newCurrentPath">
+                <el-button type="text"
+                       :disabled="item === 'dev' || item === ''"
+                       @click="changePathFull(key)">{{item}}</el-button>
+                <span class="chevron" v-if="key !== 0"><i class="fa fa-chevron-right" style="font-size: 12px; padding: 0 5px"></i></span>
+            </span>
+        </div>
+        <div class="toolBar">
+            <el-button type="text" style="margin-right: 10px;" icon="fa fa-toggle-up" @click="back" :disabled="newCurrentPath.length <= 3"> 向上一级</el-button>
+            <el-button type="text" style="margin-right: 10px;" icon="fa fa-folder" @click="addFolder"> 新建文件夹</el-button>
+            <el-button type="text" icon="fa fa-cloud-upload" @click="addFile"> 上传文件</el-button>
+        </div>
         <el-table
                 :data="tableData"
                 stripe
+                max-height="500"
                 style="width: 100%">
             <el-table-column
                     prop="name"
@@ -36,47 +49,112 @@
                 </template>
             </el-table-column>
         </el-table>
+        <addFile ref="addFile" dialogVisible="dialogVisible" @uploadSuccess="handleUploadSuccess"></addFile>
+        <addFolder ref="addFolder" dialogVisible="dialogVisible" @uploadSuccess="handleUploadSuccess"></addFolder>
     </div>
 </template>
 
 <script>
+    import addFile from '../addFile/addFile'
+    import addFolder from '../addFolder/addFolder'
+
     export default {
         name: 'folder',
+        components: {
+            addFile,
+            addFolder
+        },
+        data () {
+            return {
+                tableData: [],
+                newCurrentPath: '',
+                dialogVisible: false
+            }
+        },
         props: {
             defaultData: {
                 type: Array,
                 default () {
                     return []
                 }
+            },
+            currentPath: {
+                type: String,
+                default: ''
             }
         },
         watch: {
             defaultData (val) {
                 this.tableData = val;
-            }
-        },
-        data () {
-            return {
-                tableData: []
+            },
+            currentPath (val) {
+                this.newCurrentPath = val;
+                this.splitPath();
             }
         },
         methods: {
+            addFile () {
+                this.$refs.addFile.showDialog();
+            },
+            addFolder () {
+                this.$refs.addFolder.showDialog();
+            },
+            back () {
+                this.changePathFull(this.newCurrentPath.length - 2)
+            },
             changePath (path) {
                 this.$get('changePath',  {path})
                     .then(res => {
-                        console.log(res.data)
+                        this.newCurrentPath = res.currentPath;
                         this.tableData = res.data;
+                        this.splitPath();
                         // 跳转到folder
-                        // this.$router.push({
-                        //     name: 'folder'
-                        // })
                     })
+            },
+            splitPath() {
+                this.newCurrentPath = this.newCurrentPath.split('/');
+            },
+            changePathFull(key) {
+                let fullPath = '';
+                for (let i = 0; i <=key; i++) {
+                    if(i == key) {
+                        fullPath += this.newCurrentPath[i]
+                    } else {
+                        fullPath += this.newCurrentPath[i] + '/'
+                    }
+                }
+                this.$get('changePathFull',  {fullPath})
+                    .then(res => {
+                        this.newCurrentPath = fullPath;
+                        this.tableData = res.data;
+                        this.splitPath();
+                    })
+            },
+            handleUploadSuccess () {
+                this.changePathFull(this.newCurrentPath.length - 1)
             }
         }
     }
 </script>
 <style scoped lang="less">
     .folder {
+        .fl{
+            float: left;
+        }
+        .currentPath{
+            line-height: 25px;
+            text-align: center;
+            .el-button{
+                margin-left: 0;
+                padding: 0;
+                font-weight: 500;
+                font-size: 18px;
+                font-family: Roboto,Helvetica Neue,sans-serif;
+            }
+        }
+        .toolBar{
+            padding: 10px 0;
+        }
         padding: 30px;
         position: fixed;
         z-index: 10;
