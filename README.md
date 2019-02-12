@@ -1,7 +1,6 @@
 # electron-ftp-app
-# Electron+ Vue+ Node.jsFTP 的桌面app
 
-> An electron-vue project
+> Electron+ Vue+ Node.jsFTP 的桌面app
 
 #### Build Setup
 
