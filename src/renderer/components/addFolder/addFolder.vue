@@ -13,9 +13,7 @@
             <i class></i>
         </span>
         <div class="body">
-            <Form ref="defaultForm" :model="defaultForm" :label-width="80" action>
-                <el-input placeholder="请输入文件夹名称" v-model="defaultForm.newFolder" @keyup.enter.native="handleOk"></el-input>
-            </Form>
+            <el-input placeholder="请输入文件夹名称" v-model="defaultForm.newFolder"></el-input>
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
