@@ -36,6 +36,6 @@ app.use('/', indexRouter);
 
 const port = process.env.PORT || 3009;
 
-app.listen(3009, () => {
+app.listen(port, () => {
     console.log(`server running @ http://localhost:${port}`);
 });
