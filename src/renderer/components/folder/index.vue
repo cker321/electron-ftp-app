@@ -1,6 +1,9 @@
 
 <template>
     <div class="folder">
+        <div class="host">
+            已连接至：192.168.10.1
+        </div>
         <div class="currentPath">
             <span v-for="(item, key) in newCurrentPath">
                 <el-button type="text"

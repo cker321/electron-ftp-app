@@ -22,6 +22,7 @@ fs.mkdir("./uploads",function(err){
     console.log("目录创建成功。");
 });
 
+// 最多同时上传10个文件
 app.use(upload.array('file', 10));
 
 // 跨域设置
