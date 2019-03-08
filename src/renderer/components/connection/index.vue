@@ -32,7 +32,8 @@
                 </el-form-item>
             </el-row>
         </el-form>
-        <folder :defaultData="folderData"
+        <folder :host="form.host"
+                :defaultData="folderData"
                 :currentPath="currentPath"
                 v-show="folderData.length"></folder>
     </div>
@@ -48,7 +49,8 @@
                     host: '192.168.10.29',
                     user: 'jfedu1',
                     password: '123456',
-                    port: 21
+                    port: 21,
+                    parser: 'utf-8'
                 },
                 folderData: [],
                 currentPath: ''
@@ -61,7 +63,7 @@
             sendConnect () {
                 this.$get('startFtp',  this.form)
                     .then(res => {
-                        console.log(res.data)
+                        // console.log(res.data)
                         this.folderData = res.data;
                         this.currentPath = res.currentPath;
                         // 跳转到folder

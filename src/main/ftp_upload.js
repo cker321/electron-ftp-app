@@ -30,18 +30,7 @@ const dataOk = {code: '0000000', msg: '请求处理成功'};
 
 expressApp.use(upload.array('file', 10));
 
-// expressApp.all('*', function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-// })
-
 expressApp.get('/startFtp', function(req, res, next) {
-
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-
     startFtp (req.query, function (data) {
         getCurrentPath(function () {
             let resData = Object.assign({}, dataOk);
@@ -55,9 +44,9 @@ expressApp.get('/startFtp', function(req, res, next) {
 
 expressApp.get('/changePath', function (req, res, next) {
 
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    // res.header("Access-Control-Allow-Origin", "*");
+    // res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    // res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
 
     let path = req.query.path;
     changePath(path, function (data) {
@@ -72,9 +61,9 @@ expressApp.get('/changePath', function (req, res, next) {
 })
 
 expressApp.get('/changePathFull', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    // res.header("Access-Control-Allow-Origin", "*");
+    // res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    // res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     let fullPath = req.query.fullPath;
     changePathFull(fullPath, function (data) {
         getCurrentPath( function () {
@@ -88,9 +77,9 @@ expressApp.get('/changePathFull', function (req, res, next) {
 
 // 文件上传
 expressApp.post('/fileUpload', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    // res.header("Access-Control-Allow-Origin", "*");
+    // res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    // res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     let resData = Object.assign({}, dataOk);
     uploadFiles = [];
     req.files.forEach(function (item) {

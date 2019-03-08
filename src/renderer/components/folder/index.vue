@@ -2,7 +2,7 @@
 <template>
     <div class="folder">
         <div class="host">
-            已连接至：192.168.10.1
+            <el-tag type="success">已连接至：{{host}}</el-tag>
         </div>
         <div class="currentPath">
             <span v-for="(item, key) in newCurrentPath">
@@ -84,6 +84,10 @@
             currentPath: {
                 type: String,
                 default: ''
+            },
+            host: {
+                type: String,
+                default: 'localhost'
             }
         },
         watch: {
@@ -143,6 +147,14 @@
     .folder {
         .fl{
             float: left;
+        }
+        .host{
+            color: #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            position: absolute;
+            left: 20px;
+            top: 30px;
         }
         .currentPath{
             line-height: 25px;
