@@ -93,9 +93,6 @@ expressApp.post('/fileUpload', function (req, res, next) {
 
 // 新建文件夹
 expressApp.get('/newFolder', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     let resData = Object.assign({}, dataOk);
     getCurrentPath();
     mkdir(currentPath + '/' + req.query.newFolder, function () {

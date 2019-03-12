@@ -15,6 +15,7 @@ import {
 const express = require('express')
 const router = express.Router()
 const dataOk = {code: '0000000', msg: '请求处理成功'};
+const dataEr = {code: '0000001', msg: ''};
 
 let currentPath = '';
 let uploadFiles = []; // 上传的文件名
@@ -70,11 +71,22 @@ router.post('/fileUpload', function (req, res, next) {
 
 // 新建文件夹
 router.get('/newFolder', function (req, res, next) {
-    let resData = Object.assign({}, dataOk);
+    let resData = {};
     getCurrentPath( function (currentPath) {
-        mkdir(currentPath + '/' + req.query.newFolder, function () {
-            res.send(resData);
-        })
+        try {
+            mkdir(currentPath + '/' + req.query.newFolder, function (err) {
+                if (err) {
+                    resData = Object.assign({}, dataEr);
+                    resData.msg = err;
+                    res.send(resData);
+                } else {
+                    resData = Object.assign({}, dataOk);
+                    res.send(resData);
+                }
+            }, req.query.newFolder)
+        } catch (e) {
+            console.log(e)
+        }
     });
 })
 

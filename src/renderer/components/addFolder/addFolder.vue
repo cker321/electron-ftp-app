@@ -50,14 +50,24 @@
             },
             handleOk () {
                 if (this.defaultForm.newFolder === '') {
-                    this.$message.success('请填写完整！');
+                    this.$message.error('请填写完整！');
                     return;
+                }
+                let reg = new RegExp("[^\x00-\xff]");
+                if (reg.test(this.defaultForm.newFolder)) {
+                     this.$message.error('文件夹名称，请勿输入中文字符串！');
+                     return;
                 }
                 this.$get('newFolder', {newFolder: this.defaultForm.newFolder})
                     .then(res => {
-                        this.hideDialog();
-                        this.$message.success('上传成功！');
-                        this.$emit('uploadSuccess')
+                        if (res.code === '0000000') {
+                            this.hideDialog();
+                            this.$message.success('上传成功！');
+                            this.$emit('uploadSuccess')
+                            this.defaultForm.newFolder = '';
+                        } else {
+                            this.$message.error(`上传失败，${res.msg}`);
+                        }
                     })
             }
         }

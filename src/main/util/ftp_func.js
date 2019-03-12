@@ -67,11 +67,18 @@ function ftpUpload(fileNameArr, cb) {
 }
 
 // 新建文件夹
-function mkdir(path, cb) {
-    talk.mkdir(path, function (err) {
-        if (err) throw err;
-        cb && cb();
-    })
+function mkdir(path, cb, newFolder) {
+    getFileDir(function (list) {
+        let index = list.findIndex(item => {return (item.name === newFolder && item.type === 'd')})
+        if (index >= 0) {
+            cb && cb('存在同名文件夹！');
+            return;
+        }
+        talk.mkdir(path, function (err) {
+            if (err) throw err;
+            cb && cb();
+        })
+    });
 }
 
 
@@ -90,6 +97,7 @@ function clearCache(path) {
         });
     }
 }
+
 export {
     changePath,
     changePathFull,
