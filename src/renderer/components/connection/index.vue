@@ -33,8 +33,10 @@
             </el-row>
         </el-form>
         <folder :host="form.host"
+                :isLogin="isLogin"
                 :defaultData="folderData"
                 :currentPath="currentPath"
+                @logout="folderData = []"
                 v-show="folderData.length"></folder>
     </div>
 </template>
@@ -53,7 +55,8 @@
                     parser: 'utf-8'
                 },
                 folderData: [],
-                currentPath: ''
+                currentPath: '',
+                isLogin: false
             }
         },
         components: {
@@ -63,15 +66,16 @@
             sendConnect () {
                 this.$get('startFtp',  this.form)
                     .then(res => {
-                        // console.log(res.data)
                         this.folderData = res.data;
                         this.currentPath = res.currentPath;
+                        this.isLogin = true;
                         // 跳转到folder
                         // this.$router.push({
                         //     name: 'folder'
                         // })
                     })
-            }
+            },
+
         }
     }
 </script>

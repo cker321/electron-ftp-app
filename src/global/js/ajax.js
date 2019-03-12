@@ -27,6 +27,7 @@ axios.interceptors.request.use(function (config) {
 export default {
   install(Vue, options) {
     Vue.prototype.$post = post
+    Vue.prototype.$_post = _post
     Vue.prototype.$get = get
   }
 }
@@ -42,6 +43,7 @@ export default {
 export const post = function (api, params, load) {
   let isLoad = load ? load : false
   let PromiseHttp = new Promise(function (resolve, reject) {
+    axios.defaults.headers['X-Authorization'] && delete axios.defaults.headers['X-Authorization'];
     axios.default.withCredentials = true;
     if (api.indexOf('fileUpload') > -1) {
       axios.defaults.headers['Content-Type']  = undefined
@@ -64,10 +66,37 @@ export const post = function (api, params, load) {
   return PromiseHttp
 }
 
+export const _post = function (api, params, load) {
+  let isLoad = load ? load : false
+  let PromiseHttp = new Promise(function (resolve, reject) {
+    axios.default.withCredentials = true;
+    if (api.indexOf('device/video/add') > -1) {
+      axios.defaults.headers['Content-Type']  = undefined
+    } else {
+      axios.defaults.headers['Content-Type']  = 'application/json;charset=UTF-8'
+    }
+    axios.defaults.headers['X-Authorization'] = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI6Imh0dHA6Ly93d3cuY2xvdXdhbGsuY24iLCJpYXQiOjE1NTIzNzUzNDYsImV4cCI6MTU1MjU1NTM0Nn0.G0dcSZdNRmZ1U_j06cEPkQGkKD6Bd9tB_B3XsZejqoZCz4iBxlko8eMekKLs8o5ug5HU6Z0YGMOkLYc6Nwf_nA'
+    axios.post(api, params).then(function (res) {
+      if (isLoad) loading.end()
+      if (res.data.code !== '00000000') {
+        reject(res.data);
+        Message.error('请求出错哦！' + res.data);
+      } else {
+        resolve(res.data)
+      }
+    }).catch(function (err) {
+      // Message.error('请求出错哦！' + err);
+      reject(err)
+    })
+  })
+  return PromiseHttp
+}
+
 export const get = function (api, params, load) {
   let isLoad = load ? load : false
   if (isLoad) loading.state()
   let PromiseHttp = new Promise(function (resolve, reject) {
+    axios.defaults.headers['X-Authorization'] && delete axios.defaults.headers['X-Authorization'];
     axios.default.withCredentials = true
     axios.defaults.headers['Content-Type']  = 'application/json';
     axios.get(`${prefix}/${api}`, {params: params}).then(function (res) {

@@ -56,11 +56,13 @@ function getCurrentPath(cb) {
 
 // 上传文件
 function ftpUpload(fileNameArr, cb) {
+    let fileTemp = [];
     fileNameArr.forEach(function (fileName, index) {
         talk.put('./uploads/' + fileName, fileName, function(err) {
             if (err) throw err;
+            fileTemp.push(fileName);
             if (index === fileNameArr.length - 1) {
-                cb && cb();
+                cb && cb(fileTemp);
             }
         });
     })
@@ -80,7 +82,21 @@ function mkdir(path, cb, newFolder) {
         })
     });
 }
+// 删除文件夹
+function rmdir(path, cb) {
+    talk.rmdir(path, true, function (err) {
+        if (err) throw err;
+        cb && cb();
+    })
+}
 
+// 退出登录
+function logOut (cb) {
+    talk.logout(function (err) {
+        if (err) throw err;
+        cb && cb();
+    })
+}
 
 // 删除本地缓存
 function clearCache(path) {
@@ -105,5 +121,7 @@ export {
     getCurrentPath,
     ftpUpload,
     mkdir,
+    rmdir,
+    logOut,
     clearCache,
 };

@@ -56,6 +56,7 @@
     }
   },
   "dependencies": {
+    "@riophae/vue-treeselect": "^0.0.38",
     "axios": "^0.18.0",
     "element-ui": "^2.4.11",
     "ftp": "^0.3.10",

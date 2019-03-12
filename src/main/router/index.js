@@ -9,7 +9,10 @@ import {
     getCurrentPath,
     ftpUpload,
     mkdir,
+    rmdir,
+    logOut,
     clearCache,
+
 } from '../util/ftp_func'
 
 const express = require('express')
@@ -63,7 +66,8 @@ router.post('/fileUpload', function (req, res, next) {
     req.files.forEach(function (item) {
         uploadFiles.push(item.originalname)
     })
-    ftpUpload (uploadFiles,function () {
+    ftpUpload (uploadFiles,function (fileNames) {
+        resData.fileNames = fileNames
         clearCache('./uploads/')
         res.send(resData);
     })
@@ -90,5 +94,29 @@ router.get('/newFolder', function (req, res, next) {
     });
 })
 
+// 删除文件夹
+router.get('/removeDirectory', function (req, res, next) {
+    let resData = {};
+    getCurrentPath( function (currentPath) {
+        rmdir(req.query.deleteFolder, function (err) {
+            if (err) {
+                resData = Object.assign({}, dataEr);
+                resData.msg = err;
+                res.send(resData);
+            } else {
+                resData = Object.assign({}, dataOk);
+                res.send(resData);
+            }
+        })
+    })
+})
+
+// 退出登录
+router.get('/logout', function (req, res, next) {
+    let resData = Object.assign({}, dataOk);
+    logOut(function () {
+        res.send(resData);
+    })
+})
 
 module.exports = router
