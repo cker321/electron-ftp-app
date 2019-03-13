@@ -22,11 +22,6 @@
     "directories": {
       "output": "build"
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "perMachine": true
-    },
     "files": [
       "dist/electron/**/*"
     ],
