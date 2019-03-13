@@ -180,9 +180,7 @@
                         tree.push(temp[i]);
                     }
                 }
-                console.log(tree)
                 this.options= tree
-                return tree;
             }
         }
     }
