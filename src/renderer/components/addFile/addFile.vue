@@ -1,13 +1,15 @@
 <style lang="less">
-    .vue-treeselect{
+    .vue-treeselect {
         width: 550px;
         float: left;
         margin-left: 10px;
     }
-    .el-upload-dragger{
+
+    .el-upload-dragger {
         width: 550px;
     }
-    .el-upload__tip{
+
+    .el-upload__tip {
         margin-top: -15px;
     }
 </style>
@@ -32,14 +34,14 @@
                             action="http://localhost:3009/fileUpload"
                             :before-upload="handleBeforeUpload"
                             :file-list="fileList"
-                            multiple >
+                            multiple>
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                         <div class="el-upload__tip" slot="tip">只能上传avi/mp4文件，且不超过500M</div>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="选择单位：">
-                    <treeselect v-model="value" :options="options" />
+                    <treeselect v-model="value" :options="options"/>
                 </el-form-item>
             </el-form>
         </div>
@@ -69,7 +71,7 @@
                 default: false
             }
         },
-        data () {
+        data() {
             return {
                 dialogVisible: false,
                 fileObj: null,
@@ -81,11 +83,11 @@
             }
         },
         watch: {
-            isLogin (val) {
+            isLogin(val) {
                 val && this.getOrgList();
             }
         },
-        mounted () {
+        mounted() {
             // this.getOrgList();
         },
         methods: {
@@ -94,20 +96,21 @@
                     .then(_ => {
                         done();
                     })
-                    .catch(_ => {});
+                    .catch(_ => {
+                    });
             },
-            showDialog () {
+            showDialog() {
                 this.dialogVisible = true;
             },
             hideDialog() {
                 this.dialogVisible = false;
             },
-            handleBeforeUpload (file, key, fileList) {
+            handleBeforeUpload(file, key, fileList) {
                 this.fileObj = file;
                 this.fileList.push(file)
                 return false;
             },
-            handleOk () {
+            handleOk() {
                 if (!this.fileObj) {
                     this.$message.error('请选取视频文件！');
                     return false;
@@ -132,7 +135,7 @@
                     })
             },
             // 调用火眼接口
-            videoAdd (fileName) {
+            videoAdd(fileName) {
                 let formData = new FormData();
                 let params = {
                     orgId: this.value,
@@ -150,28 +153,24 @@
                         this.$emit('uploadSuccess')
                     })
             },
-            getOrgList () {
+            getOrgList() {
                 this.$_post(`http://${this.host}:10002/facebigdata/org/list`, {})
                     .then(res => {
                         this.initTree(res.data);
                     })
             },
-            /**
-             * 将一维的扁平数组转换为多层级对象
-             * @param  {[type]} list 一维数组，数组中每一个元素需包含 orgId 和 parentId 两个属性
-             * @return {[type]} tree 多层级树状结构
-             */
-            initTree (data) {
+            // 将一维的扁平数组转换为多层级对象数组
+            initTree(data) {
                 let temp = {};
                 let tree = [];
-                for(let i in data){
+                for (let i in data) {
                     temp[data[i].orgId] = data[i];
                     data[i].label = data[i].orgCname;
                     data[i].id = data[i].orgId;
                 }
-                for(let i in temp){
-                    if(temp[i].parentId) {
-                        if(!temp[temp[i].parentId].children) {
+                for (let i in temp) {
+                    if (temp[i].parentId) {
+                        if (!temp[temp[i].parentId].children) {
                             temp[temp[i].parentId].children = [];
                         }
                         // temp[temp[i].parentId].children[temp[i].orgId] = temp[i];
@@ -180,7 +179,7 @@
                         tree.push(temp[i]);
                     }
                 }
-                this.options= tree
+                this.options = tree
             }
         }
     }
