@@ -21,7 +21,7 @@ function createWindow () {
     height: 663,
     useContentSize: true,
     width: 1400,
-    frame:false
+    frame: false
     // webPreferences: {webSecurity: false}
   })
 

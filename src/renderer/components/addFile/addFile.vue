@@ -12,6 +12,15 @@
     .el-upload__tip {
         margin-top: -15px;
     }
+    .el-upload-dragger .el-icon-upload{
+        margin: 5px 0 5px;
+    }
+    .el-upload-dragger{
+        height: 100px;
+    }
+    .el-upload-dragger .el-upload__text{
+        line-height: 1;
+    }
 </style>
 
 <template>

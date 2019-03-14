@@ -1,6 +1,6 @@
 <template>
     <div class="connection" id="connection">
-        <div class="title-bar">一键安装工具
+        <div class="title-bar">批量上传工具
             <div class="window-button">
                 <span @click="minimize">
                     <i class="el-icon-minus"></i>
