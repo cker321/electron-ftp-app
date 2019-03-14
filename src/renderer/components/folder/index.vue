@@ -122,7 +122,7 @@
         },
         methods: {
             logOut () {
-                this.$confirm(`确认推出登录吗？`, '确认退出', {
+                this.$confirm(`确认退出登录吗？`, '确认退出', {
                     type: 'warning'
                 }).then(_ => {
                     this.$get('logout', {})
@@ -174,7 +174,7 @@
                     type: 'warning'
                 })
                     .then(_ => {
-                        this.$get('removeFile', {deleteFolder: path})
+                        this.$get('deleteFile', {fileName: path})
                             .then(res => {
                                 this.$message.success('删除成功！');
                                 this.handleUploadSuccess();
@@ -218,9 +218,8 @@
             margin-bottom: 10px;
             position: absolute;
             left: 20px;
-            top: 30px;
+            top: 50px;
         }
-
         .currentPath {
             line-height: 25px;
             text-align: center;
@@ -233,13 +232,10 @@
                 font-family: Roboto, Helvetica Neue, sans-serif;
             }
         }
-
         .toolBar {
             padding: 10px 0;
         }
-
-        padding: 30px;
-        position: fixed;
+        /*position: fixed;*/
         z-index: 10;
         left: 0;
         top: 0;

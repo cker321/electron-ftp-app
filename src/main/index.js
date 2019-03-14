@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow,ipcMain } from 'electron'
 import './app'
 /**
  * Set `__static` path to static files in production
@@ -21,13 +21,14 @@ function createWindow () {
     height: 663,
     useContentSize: true,
     width: 1400,
+    frame:false
     // webPreferences: {webSecurity: false}
   })
 
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  mainWindow.openDevTools();
+  // mainWindow.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -41,6 +42,22 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+ipcMain.on('close', () => {
+  mainWindow.close()
+});
+
+ipcMain.on('minimize', () => {
+  mainWindow.minimize()
+});
+
+ipcMain.on('maximize', () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow.maximize()
+  }
+});
 
 app.on('activate', () => {
   if (mainWindow === null) {

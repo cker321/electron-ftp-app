@@ -21,12 +21,14 @@
                v-loading="loading"
                element-loading-text="正在上传，请稍等"
                element-loading-background="rgba(0, 0, 0, 0.8)"
-               :before-close="handleClose">
+               :modal-close="false"
+               :close-on-click-modal="false"
+               :show-close="false">
         <div slot="title">
             <i class="el-icon-upload"></i>上传文件
         </div>
         <div class="body">
-            <el-form ref="defaultForm" :model="defaultForm" label-width="80" action>
+            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80" action>
                 <el-form-item label="上传文件：">
                     <el-upload
                             class="upload-demo"
@@ -40,13 +42,13 @@
                         <div class="el-upload__tip" slot="tip">只能上传avi/mp4文件，且不超过500M</div>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="选择单位：">
+                <el-form-item label="选择单位：" prop="value">
                     <treeselect v-model="value" :options="options"/>
                 </el-form-item>
             </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="handleOk" :disabled="loading">确 定</el-button>
         </span>
     </el-dialog>
@@ -79,7 +81,12 @@
                 fileList: [],
                 loading: false,
                 options: [],
-                value: null
+                value: null,
+                rules: {
+                    value: [
+                        { required: true, message: '选择单位', trigger: 'blur' }
+                    ],
+                }
             }
         },
         watch: {
@@ -91,13 +98,12 @@
             // this.getOrgList();
         },
         methods: {
-            handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {
-                    });
+            handleClose() {
+                this.dialogVisible = false
+                this.defaultForm = {}
+                this.fileList =  []
+                this.loading = false
+                this.value = null
             },
             showDialog() {
                 this.dialogVisible = true;
@@ -113,6 +119,10 @@
             handleOk() {
                 if (!this.fileObj) {
                     this.$message.error('请选取视频文件！');
+                    return false;
+                }
+                if (!this.value) {
+                    this.$message.error('请选择所属单位！');
                     return false;
                 }
                 let formData = new FormData();
@@ -152,6 +162,10 @@
                         this.loading = false;
                         this.$emit('uploadSuccess')
                     })
+                    .catch(err => {
+                        this.$message.error(err.message)
+                        this.loading = false;
+                    })
             },
             getOrgList() {
                 this.$_post(`http://${this.host}:10002/facebigdata/org/list`, {})
@@ -173,7 +187,6 @@
                         if (!temp[temp[i].parentId].children) {
                             temp[temp[i].parentId].children = [];
                         }
-                        // temp[temp[i].parentId].children[temp[i].orgId] = temp[i];
                         temp[temp[i].parentId].children.push(temp[i]);
                     } else {
                         tree.push(temp[i]);

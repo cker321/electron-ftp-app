@@ -90,6 +90,15 @@ function rmdir(path, cb) {
     })
 }
 
+// 删除文件
+function deleteFile(path, cb) {
+    console.log(path)
+    talk.delete(path, function (err) {
+        if (err) throw err;
+        cb && cb();
+    })
+}
+
 // 退出登录
 function logOut (cb) {
     talk.logout(function (err) {
@@ -123,5 +132,6 @@ export {
     mkdir,
     rmdir,
     logOut,
-    clearCache,
+    deleteFile,
+    clearCache
 };

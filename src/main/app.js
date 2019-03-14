@@ -17,7 +17,7 @@ let upload = multer({ storage: storage })
 
 fs.mkdir("./uploads",function(err){
     if (err) {
-        return console.error(err);
+        return;
     }
     console.log("目录创建成功。");
 });

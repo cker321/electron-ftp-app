@@ -14,4 +14,8 @@
   @import './assets/font-awsome/css/font-awesome.min.css';
   body {font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
   /* CSS */
+  body {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
 </style>

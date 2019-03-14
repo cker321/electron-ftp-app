@@ -80,7 +80,7 @@ export const _post = function (api, params, load) {
       if (isLoad) loading.end()
       if (res.data.code !== '00000000') {
         reject(res.data);
-        Message.error('请求出错哦！' + res.data);
+        // Message.error('请求出错哦！' + res.data);
       } else {
         resolve(res.data)
       }

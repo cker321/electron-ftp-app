@@ -8,7 +8,7 @@
             :visible.sync="dialogVisible"
             width="50%"
             :modal-append-to-body="false"
-            :before-close="handleClose">
+            :show-close="false">
         <span slot="title">新建文件夹
             <i class></i>
         </span>
@@ -16,7 +16,7 @@
             <el-input placeholder="请输入文件夹名称" v-model="defaultForm.newFolder"></el-input>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="handleClose">取 消</el-button>
             <el-button type="primary" @click="handleOk">确 定</el-button>
         </span>
     </el-dialog>
@@ -36,11 +36,8 @@
         },
         methods: {
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {});
+                this.defaultForm.newFolder = ''
+                this.dialogVisible = false
             },
             showDialog () {
                 this.dialogVisible = true;

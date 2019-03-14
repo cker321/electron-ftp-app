@@ -11,8 +11,8 @@ import {
     mkdir,
     rmdir,
     logOut,
-    clearCache,
-
+    deleteFile,
+    clearCache
 } from '../util/ftp_func'
 
 const express = require('express')
@@ -98,7 +98,25 @@ router.get('/newFolder', function (req, res, next) {
 router.get('/removeDirectory', function (req, res, next) {
     let resData = {};
     getCurrentPath( function (currentPath) {
-        rmdir(req.query.deleteFolder, function (err) {
+        rmdir(currentPath + '/' + req.query.deleteFolder, function (err) {
+            if (err) {
+                resData = Object.assign({}, dataEr);
+                resData.msg = err;
+                res.send(resData);
+            } else {
+                resData = Object.assign({}, dataOk);
+                res.send(resData);
+            }
+        })
+    })
+})
+
+// 删除文件
+router.get('/deleteFile', function (req, res, next) {
+    let resData = {};
+    getCurrentPath( function (currentPath) {
+        console.log(req.query.fileName)
+        deleteFile(currentPath + '/' + req.query.fileName, function (err) {
             if (err) {
                 resData = Object.assign({}, dataEr);
                 resData.msg = err;
