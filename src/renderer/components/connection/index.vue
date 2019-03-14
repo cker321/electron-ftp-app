@@ -83,6 +83,10 @@
         components: {
             folder
         },
+        mounted () {
+            this.updateProgram();
+            this.updateConfirm();
+        },
         methods: {
             sendConnect () {
                 this.$get('startFtp',  this.form)
@@ -96,7 +100,9 @@
                 ipcRenderer.send('minimize');
             },
             close () {
-                this.$confirm('确认关闭？')
+                this.$confirm('确认退出本应用吗？', '退出程序', {
+                    type: 'warning',
+                })
                     .then(_ => {
                         ipcRenderer.send('close')
                         done();
@@ -105,6 +111,18 @@
             maximize () {
                 ipcRenderer.send('maximize');
                 this.normalState = !this.normalState;
+            },
+            updateProgram () {
+                ipcRenderer.send('update')
+            },
+            updateConfirm () {
+                ipcRenderer.on('message',(event,{message,data}) => {
+                    if (message === 'isUpdateNow') {
+                        if (confirm('是否现在更新？')) {
+                            ipcRenderer.send('updateNow');
+                        }
+                    }
+                });
             }
         }
     }

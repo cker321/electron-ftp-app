@@ -127,11 +127,15 @@
             },
             handleOk() {
                 if (!this.fileObj) {
-                    this.$message.error('请选取视频文件！');
+                    this.$notify.error({
+                        message: '请选取视频文件'
+                    });
                     return false;
                 }
                 if (!this.value) {
-                    this.$message.error('请选择所属单位！');
+                    this.$notify.error({
+                        message: '请选择所属单位！'
+                    });
                     return false;
                 }
                 let formData = new FormData();
@@ -143,13 +147,19 @@
                     .then(res => {
                         this.hideDialog();
                         this.fileList = [];
-                        this.$message.success('上传成功！');
+                        // this.$message.success('上传成功！');
+                        this.$notify({
+                            message: '上传成功！',
+                            type: 'success'
+                        });
                         res.fileNames.forEach(item => {
                             this.videoAdd(item);
                         })
                     })
                     .catch(err => {
-                        this.$message.success(err);
+                        this.$notify.error({
+                            message: err.message
+                        });
                         this.loading = false;
                     })
             },
@@ -167,12 +177,18 @@
                 });
                 this.$_post(`http://${this.host}:10002/facebigdata/device/video/add`, formData)
                     .then(res => {
-                        this.$message.success(res.message)
+                        // this.$message.success(res.message)
+                        this.$notify({
+                            message: res.message,
+                            type: 'success'
+                        });
                         this.loading = false;
                         this.$emit('uploadSuccess')
                     })
                     .catch(err => {
-                        this.$message.error(err.message)
+                        this.$notify.error({
+                            message: err.message
+                        });
                         this.loading = false;
                     })
             },

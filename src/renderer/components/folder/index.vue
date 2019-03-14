@@ -128,13 +128,19 @@
                     this.$get('logout', {})
                         .then(res => {
                             if (res.code === '0000000') {
-                                this.$message.success('退出登录成功！')
+                                // this.$message.success('退出登录成功！')
+                                this.$notify({
+                                    message: '退出登录成功！',
+                                    type: 'success'
+                                });
                                 this.$router.push({
                                     name: 'connection'
                                 })
                                 this.$emit('logout')
                             } else {
-                                this.$message.error('退出失败！')
+                                this.$notify.error({
+                                    message: '退出失败'
+                                });
                             }
                         })
                 })
@@ -164,7 +170,10 @@
                     .then(_ => {
                         this.$get('removeDirectory', {deleteFolder: path})
                             .then(res => {
-                                this.$message.success('删除成功！');
+                                this.$notify({
+                                    message: '删除成功',
+                                    type: 'success'
+                                });
                                 this.handleUploadSuccess();
                             })
                     });
@@ -176,7 +185,10 @@
                     .then(_ => {
                         this.$get('deleteFile', {fileName: path})
                             .then(res => {
-                                this.$message.success('删除成功！');
+                                this.$notify({
+                                    message: '删除成功',
+                                    type: 'success'
+                                });
                                 this.handleUploadSuccess();
                             })
                     });
