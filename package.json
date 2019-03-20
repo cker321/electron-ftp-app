@@ -1,7 +1,7 @@
 {
-  "name": "electron-ftp-app",
+  "name": "faceBigData-VideoUploader",
   "version": "0.0.1",
-  "author": "Zhurui <zhurui@cloudwalk.cn>",
+  "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "description": "An electron-vue ftp upload file project",
   "license": null,
   "main": "./dist/electron/main.js",
@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "cloudwalk-ftp-app",
+    "productName": "faceBigData-VideoUploader",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"
@@ -50,7 +50,7 @@
       "icon": "build/icons/icon.icns"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/logo.ico"
     },
     "linux": {
       "icon": "build/icons"

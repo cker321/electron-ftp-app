@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+
+    let arr = [1, 2, 3, 4, 5, 6, 7, 8];
+    let weight = [7, 2, 1, 0, 4, 5, 6, 3];
+    let result = []
+
+    let weightLen = weight.length;
+
+    for (let loop = 0; loop < weightLen; loop++) {
+        result.push(arr[weight[loop]])
+    }
+
+    // let arrLen = arr.length;
+    // for (let loop = 0; loop < arrLen; loop++) {
+    //     for (let i = 0; i < arrLen; i++) {
+    //         if (arr[i] < arr[i+1]) {
+    //             swap(i)
+    //         }
+    //     }
+    // }
+    // 交换相邻数据
+    // function swap(index) {
+    //     let temp = arr[index];
+    //     arr[index] = arr[index + 1];
+    //     arr[index + 1] = temp;
+    // };
+
+    class BubbleSort {
+        constructor (arr) {
+
+            this.data = [];
+
+            arr.forEach(item => {
+                this.data.push(item);
+            })
+
+            let arrLen = this.data.length;
+            for (let loop = 0; loop < arrLen; loop++) {
+                for (let i = 0; i < arrLen; i++) {
+                    if (this.data[i] < this.data[i+1]) {
+                        this.swap(i)
+                    }
+                }
+            }
+
+            return this.data;
+        }
+        swap (index) {
+            let temp = this.data[index];
+            this.data[index] = this.data[index + 1];
+            this.data[index + 1] = temp;
+        }
+    }
+
+    // console.log(new BubbleSort(arr));
+    // console.log(arr);
+
+
+</script>
+</html>
