@@ -17,20 +17,26 @@ import {
 
 const express = require('express')
 const router = express.Router()
+const ERROR_CODE = '0000001'
 const dataOk = {code: '0000000', msg: '请求处理成功'};
-const dataEr = {code: '0000001', msg: ''};
+const dataEr = {code: ERROR_CODE, msg: ''};
 
 let currentPath = '';
 let uploadFiles = []; // 上传的文件名
 
 router.get('/startFtp', function(req, res, next) {
     startFtp (req.query, function (data) {
-        getCurrentPath(function (currentPath) {
-            let resData = Object.assign({}, dataOk);
-            resData.data = data
-            resData.currentPath = currentPath
+        if (data === ERROR_CODE) {
+            let resData = Object.assign({}, dataEr, {msg: '登录失败！'});
             res.send(resData);
-        });
+        } else {
+            getCurrentPath(function (currentPath) {
+                let resData = Object.assign({}, dataOk);
+                resData.data = data
+                resData.currentPath = currentPath
+                res.send(resData);
+            });
+        }
     })
 });
 

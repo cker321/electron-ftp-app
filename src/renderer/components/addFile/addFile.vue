@@ -128,13 +128,15 @@
             handleOk() {
                 if (!this.fileObj) {
                     this.$notify.error({
-                        message: '请选取视频文件'
+                        message: '请选取视频文件',
+                        offset: 50
                     });
                     return false;
                 }
                 if (!this.value) {
                     this.$notify.error({
-                        message: '请选择所属单位！'
+                        message: '请选择所属单位！',
+                        offset: 50
                     });
                     return false;
                 }
@@ -150,7 +152,8 @@
                         // this.$message.success('上传成功！');
                         this.$notify({
                             message: '上传成功！',
-                            type: 'success'
+                            type: 'success',
+                            offset: 50
                         });
                         res.fileNames.forEach(item => {
                             this.videoAdd(item);
@@ -158,7 +161,8 @@
                     })
                     .catch(err => {
                         this.$notify.error({
-                            message: err.message
+                            message: err.message,
+                            offset: 50
                         });
                         this.loading = false;
                     })
@@ -180,25 +184,28 @@
                         // this.$message.success(res.message)
                         this.$notify({
                             message: res.message,
-                            type: 'success'
+                            type: 'success',
+                            offset: 50
                         });
                         this.loading = false;
                         this.$emit('uploadSuccess')
                     })
                     .catch(err => {
                         this.$notify.error({
-                            message: err.message
+                            message: err.message,
+                            offset: 50
                         });
                         this.loading = false;
                     })
             },
+            // 获取单位
             getOrgList() {
                 this.$_post(`http://${this.host}:10002/facebigdata/org/list`, {})
                     .then(res => {
                         this.initTree(res.data);
                     })
             },
-            // 将一维的扁平数组转换为多层级对象数组
+            // 将数组转换为多层级对象数组
             initTree(data) {
                 let temp = {};
                 let tree = [];

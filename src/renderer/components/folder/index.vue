@@ -131,7 +131,8 @@
                                 // this.$message.success('退出登录成功！')
                                 this.$notify({
                                     message: '退出登录成功！',
-                                    type: 'success'
+                                    type: 'success',
+                                    offset: 50
                                 });
                                 this.$router.push({
                                     name: 'connection'
@@ -139,7 +140,8 @@
                                 this.$emit('logout')
                             } else {
                                 this.$notify.error({
-                                    message: '退出失败'
+                                    message: '退出失败',
+                                    offset: 50
                                 });
                             }
                         })
@@ -172,7 +174,8 @@
                             .then(res => {
                                 this.$notify({
                                     message: '删除成功',
-                                    type: 'success'
+                                    type: 'success',
+                                    offset: 50
                                 });
                                 this.handleUploadSuccess();
                             })
@@ -187,7 +190,8 @@
                             .then(res => {
                                 this.$notify({
                                     message: '删除成功',
-                                    type: 'success'
+                                    type: 'success',
+                                    offset: 50
                                 });
                                 this.handleUploadSuccess();
                             })

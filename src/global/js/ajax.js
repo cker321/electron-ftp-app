@@ -75,7 +75,7 @@ export const _post = function (api, params, load) {
     } else {
       axios.defaults.headers['Content-Type']  = 'application/json;charset=UTF-8'
     }
-    axios.defaults.headers['X-Authorization'] = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI6Imh0dHA6Ly93d3cuY2xvdXdhbGsuY24iLCJpYXQiOjE1NTIzNzUzNDYsImV4cCI6MTU1MjU1NTM0Nn0.G0dcSZdNRmZ1U_j06cEPkQGkKD6Bd9tB_B3XsZejqoZCz4iBxlko8eMekKLs8o5ug5HU6Z0YGMOkLYc6Nwf_nA'
+    axios.defaults.headers['X-Authorization'] = 'Bearer ' + sessionStorage.getItem('cloudwalk-token')
     axios.post(api, params).then(function (res) {
       if (isLoad) loading.end()
       if (res.data.code !== '00000000') {

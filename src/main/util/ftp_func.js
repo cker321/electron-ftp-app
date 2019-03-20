@@ -6,6 +6,7 @@ let fs = require('fs');
 let client = require('ftp');
 let talk = ''
 let currentPath = ''
+const ERROR_CODE = '0000001'
 
 // 改变路径（相对）
 function changePath (path, cb) {
@@ -30,11 +31,18 @@ function changePathFull (path, cb) {
 function startFtp (obj, cb) {
     let params = Object.assign({}, obj);
     talk = new client();
+    // 连接成功
     talk.on('ready', function() {
         getFileDir(cb);
     });
+    // 连接错误
+    talk.on('error', function (err) {
+        cb(ERROR_CODE)
+    })
     params.keepalive = 1000;
+    // 开启连接
     talk.connect(params);
+
 }
 
 // 获取当前目录的文件
