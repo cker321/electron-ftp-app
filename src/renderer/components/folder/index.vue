@@ -33,10 +33,10 @@
                                v-if="props.row.type !== 'd'" disabled><i class="fa fa-file"></i>&nbsp;{{props.row.name}}
                     </el-button>
                     <el-button
+                            v-else
                             style="width: 100%; text-align: left"
                             type="text"
-                            @click="changePath(props.row.name)"
-                            v-else><i class="fa fa-folder"></i>&nbsp;{{props.row.name}}
+                            @click="changePath(props.row.name)"><i class="fa fa-folder"></i>&nbsp;{{props.row.name}}
                     </el-button>
                 </template>
             </el-table-column>
@@ -44,6 +44,9 @@
                     prop="size"
                     width="100"
                     label="大小">
+                <template slot-scope="props">
+                    {{getFileSize(props.row)}}
+                </template>
             </el-table-column>
             <el-table-column
                     prop="date"
@@ -58,8 +61,8 @@
                     width="200"
                     label="操作">
                 <template slot-scope="props">
-                    <el-button v-if="props.row.type === 'd'"  @click="rmdir(props.row.name)" type="text">删除目录</el-button>
-                    <el-button v-else  @click="rmfile(props.row.name)" type="text">删除文件</el-button>
+                    <el-button v-if="props.row.type === 'd'" @click="rmdir(props.row.name)" type="text">删除目录</el-button>
+                    <el-button v-else @click="rmfile(props.row.name)" type="text">删除文件</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -89,6 +92,19 @@
                 tableData: [],
                 newCurrentPath: '',
                 dialogVisible: false
+            }
+        },
+        computed: {
+            getFileSize(item) {
+                return function (item) {
+                    if (item.type === 'd') {
+                        return '-'
+                    }
+                    // kb
+                    let size = item.size / 1024;
+                    size = (size >= (1000 * 1024) ? (size/1024/1024).toFixed(2) + 'GB' : size >= 500 ? (size / 1024).toFixed(2) + 'MB' : size.toFixed(2) + 'KB');
+                    return size
+                }
             }
         },
         props: {
@@ -121,7 +137,7 @@
             }
         },
         methods: {
-            logOut () {
+            logOut() {
                 this.$confirm(`确认退出登录吗？`, '确认退出', {
                     type: 'warning'
                 }).then(_ => {
@@ -236,6 +252,7 @@
             left: 20px;
             top: 50px;
         }
+
         .currentPath {
             line-height: 25px;
             text-align: center;
@@ -248,9 +265,11 @@
                 font-family: Roboto, Helvetica Neue, sans-serif;
             }
         }
+
         .toolBar {
             padding: 10px 0;
         }
+
         /*position: fixed;*/
         z-index: 10;
         left: 0;

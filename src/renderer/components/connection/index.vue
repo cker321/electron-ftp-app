@@ -16,7 +16,7 @@
             </div>
         </div>
         <!--登录ftp-->
-        <div class="main-content">
+        <div class="main-content"  v-loading="loading">
             <div v-show="!folderData.length || !isLogin" class="logo">
                 <i class="el-icon-upload"></i>
                 |
@@ -93,8 +93,8 @@
                 </el-row>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="resetCloudwalk();dialogVisible = false;">取 消</el-button>
-                <el-button type="primary" @click="loginToCloudWalk">确 定</el-button>
+                <el-button @click="resetCloudwalk();dialogVisible = false;" v-loading="faceLoading">取 消</el-button>
+                <el-button type="primary" @click="loginToCloudWalk" v-loading="faceLoading">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -119,7 +119,7 @@
                 platform: {
                     face_host: '192.168.10.29',
                     face_user: 'admin',
-                    face_password: ''
+                    face_password: 'cloudwalk_eye'
                 },
                 folderData: [],
                 currentPath: '',
@@ -128,7 +128,10 @@
                 normalState: true,
 
                 // 登录火眼弹窗
-                dialogVisible: false
+                dialogVisible: false,
+
+                loading: false,
+                faceLoading: false
             }
         },
         components: {
@@ -141,37 +144,39 @@
         methods: {
             // 登录ftp
             sendConnect () {
+                this.loading = true;
                 this.$get('startFtp',  this.form)
                     .then(res => {
+                        this.loading = false;
                         if(res.code === '0000000') {
                             this.folderData = res.data;
                             this.currentPath = res.currentPath;
-                            // this.isLogin = true;
+                            // 登录火眼界面
+                            this.dialogVisible = true;
                         } else {
                             this.$message.error(res.msg + '请检查登录项是否填写正确！')
                         }
-                    })
-                    // 登录火眼
-                    .then(res => {
-                        this.dialogVisible = true;
                     })
             },
             // 登录火眼
             loginToCloudWalk () {
                 this.$refs.platform.validate(valid => {
                     if (valid) {
-                        let host = this.platform.face_host.split(':')[0]
+                        let host = this.platform.face_host.split(':')[0];
+                        this.faceLoading = true;
                         this.$_post(`http://${host}:10002/facebigdata/auth/login`, {
                             password: md5(this.platform.face_password),
                             username: "admin"
                         })
                             .then(res => {
+                                this.faceLoading = false;
                                 sessionStorage.setItem('cloudwalk-token', res.data.token);
                                 this.isLogin = true;
                                 this.dialogVisible = false;
                                 this.resetCloudwalk();
                             })
                             .catch(err => {
+                                this.faceLoading = false;
                                 this.$message.error('登录火眼失败，' + err.message);
                             })
                     }
