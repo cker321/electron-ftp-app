@@ -95,7 +95,8 @@
                     value: [
                         { required: true, message: '选择单位', trigger: 'blur' }
                     ],
-                }
+                },
+                currentPath: ''
             }
         },
         watch: {
@@ -121,7 +122,7 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
-                console.log(file)
+                // console.log(file)
                 this.fileObj = file;
                 this.fileList.push(file)
                 return false;
@@ -160,6 +161,7 @@
                             type: 'success',
                             offset: 50
                         });
+                        this.currentPath = res.currentPath;
                         res.fileNames.forEach(item => {
                             this.videoAdd(item);
                         })
@@ -179,7 +181,7 @@
                     orgId: this.value,
                     userId: '1000',
                     remark: 'ftp工具上传',
-                    path: `/dev/shm/offlinevideo/${fileName}`,
+                    path: `${this.currentPath}/${fileName}`,
                 }
                 Object.keys(params).map(key => {
                     formData.append(key, params[key]);

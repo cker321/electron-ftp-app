@@ -23,8 +23,8 @@ const dataOk = {code: '0000000', msg: '请求处理成功'};
 const dataEr = {code: ERROR_CODE, msg: ''};
 var bodyparser = require('body-parser');
 
-let currentPath = '';
-let uploadFiles = []; // 上传的文件名
+let GloabalCurrentPath = '';
+// let uploadFiles = []; // 上传的文件名
 
 app.use(bodyparser.urlencoded({extende:true}));
 app.use(bodyparser.json())
@@ -37,6 +37,7 @@ app.get('/startFtp', function(req, res) {
         } else {
             getCurrentPath(function (currentPath) {
                 let resData = Object.assign({}, dataOk);
+                currentPath = currentPath
                 resData.data = data
                 resData.currentPath = currentPath
                 res.send(resData);
@@ -51,7 +52,8 @@ app.get('/changePath', function (req, res) {
         getCurrentPath( function (currentPath) {
             let resData = Object.assign({}, dataOk);
             resData.data = data
-            resData.currentPath = currentPath
+            resData.currentPath = currentPath;
+            GloabalCurrentPath = currentPath;
             res.send(resData);
         });
 
@@ -64,7 +66,8 @@ app.get('/changePathFull', function (req, res) {
         getCurrentPath(function (currentPath) {
             let resData = Object.assign({}, dataOk);
             resData.data = data
-            resData.currentPath = currentPath
+            resData.currentPath = currentPath;
+            GloabalCurrentPath = currentPath;
             res.send(resData);
         });
     })
@@ -89,6 +92,7 @@ app.post('/fileInfoUploads', function (req, res) {
     let resData = Object.assign({}, dataOk);
     ftpUploads (req.body.filePath ,function (fileNames) {
         resData.fileNames = fileNames
+        resData.currentPath = GloabalCurrentPath;
         res.send(resData);
     })
 })
@@ -96,29 +100,8 @@ app.post('/fileInfoUploads', function (req, res) {
 // 新建文件夹
 app.get('/newFolder', function (req, res) {
     let resData = {};
-    getCurrentPath( function (currentPath) {
-        try {
-            mkdir(currentPath + '/' + req.query.newFolder, function (err) {
-                if (err) {
-                    resData = Object.assign({}, dataEr);
-                    resData.msg = err;
-                    res.send(resData);
-                } else {
-                    resData = Object.assign({}, dataOk);
-                    res.send(resData);
-                }
-            }, req.query.newFolder)
-        } catch (e) {
-            console.log(e)
-        }
-    });
-})
-
-// 删除文件夹
-app.get('/removeDirectory', function (req, res) {
-    let resData = {};
-    getCurrentPath( function (currentPath) {
-        rmdir(currentPath + '/' + req.query.deleteFolder, function (err) {
+    try {
+        mkdir(GloabalCurrentPath + '/' + req.query.newFolder, function (err) {
             if (err) {
                 resData = Object.assign({}, dataEr);
                 resData.msg = err;
@@ -127,25 +110,42 @@ app.get('/removeDirectory', function (req, res) {
                 resData = Object.assign({}, dataOk);
                 res.send(resData);
             }
-        })
+        }, req.query.newFolder)
+    } catch (e) {
+        resData = Object.assign({}, dataEr);
+        resData.msg = e;
+        res.send(resData);
+    }
+})
+
+// 删除文件夹
+app.get('/removeDirectory', function (req, res) {
+    let resData = {};
+    rmdir(GloabalCurrentPath + '/' + req.query.deleteFolder, function (err) {
+        if (err) {
+            resData = Object.assign({}, dataEr);
+            resData.msg = err;
+            res.send(resData);
+        } else {
+            resData = Object.assign({}, dataOk);
+            res.send(resData);
+        }
     })
 })
 
 // 删除文件
 app.get('/deleteFile', function (req, res) {
     let resData = {};
-    getCurrentPath( function (currentPath) {
-        console.log(req.query.fileName)
-        deleteFile(currentPath + '/' + req.query.fileName, function (err) {
-            if (err) {
-                resData = Object.assign({}, dataEr);
-                resData.msg = err;
-                res.send(resData);
-            } else {
-                resData = Object.assign({}, dataOk);
-                res.send(resData);
-            }
-        })
+    console.log(req.query.fileName)
+    deleteFile(GloabalCurrentPath + '/' + req.query.fileName, function (err) {
+        if (err) {
+            resData = Object.assign({}, dataEr);
+            resData.msg = err;
+            res.send(resData);
+        } else {
+            resData = Object.assign({}, dataOk);
+            res.send(resData);
+        }
     })
 })
 
