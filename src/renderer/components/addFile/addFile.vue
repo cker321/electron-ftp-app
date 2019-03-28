@@ -121,6 +121,7 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
+                console.log(file)
                 this.fileObj = file;
                 this.fileList.push(file)
                 return false;
@@ -140,12 +141,16 @@
                     });
                     return false;
                 }
-                let formData = new FormData();
+                let filePath = [];
                 this.fileList.forEach(item => {
-                    formData.append('file', item);
+                    filePath.push({
+                        path: item.path,
+                        name: item.name
+                    })
                 })
+
                 this.loading = true;
-                this.$post('fileUpload', formData)
+                this.$post('fileInfoUploads', {filePath})
                     .then(res => {
                         this.hideDialog();
                         this.fileList = [];

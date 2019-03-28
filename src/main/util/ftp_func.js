@@ -76,6 +76,25 @@ function ftpUpload(fileNameArr, cb) {
     })
 }
 
+// 无http直接上传
+// 上传文件
+function ftpUploads(filePaths, cb) {
+    let fileTemp = [];
+    console.log(filePaths)
+    filePaths.forEach(function (fileObj, index) {
+        let fileName = fileObj.name;
+        let filePath = fileObj.path.replace(/\//g, '/');
+        talk.put(filePath, fileName, function(err) {
+            if (err) throw err;
+            fileTemp.push(fileName);
+            if (index === filePaths.length - 1) {
+                cb && cb(fileTemp);
+            }
+        });
+    })
+}
+
+
 // 新建文件夹
 function mkdir(path, cb, newFolder) {
     getFileDir(function (list) {
@@ -137,6 +156,7 @@ export {
     startFtp,
     getCurrentPath,
     ftpUpload,
+    ftpUploads,
     mkdir,
     rmdir,
     logOut,

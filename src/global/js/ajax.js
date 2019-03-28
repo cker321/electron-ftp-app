@@ -43,8 +43,8 @@ export default {
 export const post = function (api, params, load) {
   let isLoad = load ? load : false
   let PromiseHttp = new Promise(function (resolve, reject) {
-    axios.defaults.headers['X-Authorization'] && delete axios.defaults.headers['X-Authorization'];
-    axios.default.withCredentials = true;
+    // axios.defaults.headers['X-Authorization'] && delete axios.defaults.headers['X-Authorization'];
+    // axios.default.withCredentials = true;
     if (api.indexOf('fileUpload') > -1) {
       axios.defaults.headers['Content-Type']  = undefined
     } else {

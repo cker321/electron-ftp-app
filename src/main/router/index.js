@@ -8,6 +8,7 @@ import {
     startFtp,
     getCurrentPath,
     ftpUpload,
+    ftpUploads,
     mkdir,
     rmdir,
     logOut,
@@ -16,15 +17,19 @@ import {
 } from '../util/ftp_func'
 
 const express = require('express')
-const router = express.Router()
+const app = express()
 const ERROR_CODE = '0000001'
 const dataOk = {code: '0000000', msg: '请求处理成功'};
 const dataEr = {code: ERROR_CODE, msg: ''};
+var bodyparser = require('body-parser');
 
 let currentPath = '';
 let uploadFiles = []; // 上传的文件名
 
-router.get('/startFtp', function(req, res, next) {
+app.use(bodyparser.urlencoded({extende:true}));
+app.use(bodyparser.json())
+
+app.get('/startFtp', function(req, res) {
     startFtp (req.query, function (data) {
         if (data === ERROR_CODE) {
             let resData = Object.assign({}, dataEr, {msg: '登录失败！'});
@@ -40,7 +45,7 @@ router.get('/startFtp', function(req, res, next) {
     })
 });
 
-router.get('/changePath', function (req, res, next) {
+app.get('/changePath', function (req, res) {
     let path = req.query.path;
     changePath(path, function (data) {
         getCurrentPath( function (currentPath) {
@@ -53,7 +58,7 @@ router.get('/changePath', function (req, res, next) {
     })
 })
 
-router.get('/changePathFull', function (req, res, next) {
+app.get('/changePathFull', function (req, res) {
     let fullPath = req.query.fullPath;
     changePathFull(fullPath,function (data) {
         getCurrentPath(function (currentPath) {
@@ -66,21 +71,30 @@ router.get('/changePathFull', function (req, res, next) {
 })
 
 // 文件上传
-router.post('/fileUpload', function (req, res, next) {
+// app.post('/fileUpload', function (req, res) {
+//     let resData = Object.assign({}, dataOk);
+//     uploadFiles = [];
+//     req.files.forEach(function (item) {
+//         uploadFiles.push(item.originalname)
+//     })
+//     ftpUpload (uploadFiles,function (fileNames) {
+//         resData.fileNames = fileNames
+//         clearCache('./uploads/')
+//         res.send(resData);
+//     })
+// })
+
+// 无http请求文件上传
+app.post('/fileInfoUploads', function (req, res) {
     let resData = Object.assign({}, dataOk);
-    uploadFiles = [];
-    req.files.forEach(function (item) {
-        uploadFiles.push(item.originalname)
-    })
-    ftpUpload (uploadFiles,function (fileNames) {
+    ftpUploads (req.body.filePath ,function (fileNames) {
         resData.fileNames = fileNames
-        clearCache('./uploads/')
         res.send(resData);
     })
 })
 
 // 新建文件夹
-router.get('/newFolder', function (req, res, next) {
+app.get('/newFolder', function (req, res) {
     let resData = {};
     getCurrentPath( function (currentPath) {
         try {
@@ -101,7 +115,7 @@ router.get('/newFolder', function (req, res, next) {
 })
 
 // 删除文件夹
-router.get('/removeDirectory', function (req, res, next) {
+app.get('/removeDirectory', function (req, res) {
     let resData = {};
     getCurrentPath( function (currentPath) {
         rmdir(currentPath + '/' + req.query.deleteFolder, function (err) {
@@ -118,7 +132,7 @@ router.get('/removeDirectory', function (req, res, next) {
 })
 
 // 删除文件
-router.get('/deleteFile', function (req, res, next) {
+app.get('/deleteFile', function (req, res) {
     let resData = {};
     getCurrentPath( function (currentPath) {
         console.log(req.query.fileName)
@@ -136,11 +150,11 @@ router.get('/deleteFile', function (req, res, next) {
 })
 
 // 退出登录
-router.get('/logout', function (req, res, next) {
+app.get('/logout', function (req, res) {
     let resData = Object.assign({}, dataOk);
     logOut(function () {
         res.send(resData);
     })
 })
 
-module.exports = router
+module.exports = app
