@@ -115,9 +115,6 @@ app.post('/fileInfoUploads', function (req, res, next) {
         res.send(resData)
     });
 });
-app.post('/fileInfoUploads', function (req, res) {
-    res.send({ok: 1});
-})
 
 
 // 新建文件夹

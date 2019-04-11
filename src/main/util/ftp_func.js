@@ -86,7 +86,7 @@ function ftpUploads(filePaths, res, cb, cbEnd) {
         let readFile = fs.createReadStream(filePath),
         cur = 0,
         total = fs.statSync(filePath).size;
-        res.writeHeader(200, {"Content-Length": total});
+        // res.writeHeader(200, {"Content-Length": total});
         readFile.on('data', function(d) {
             // console.log(`接收到 ${cur} 字节的数据`);
             cur += d.length;

@@ -16,7 +16,9 @@
             </div>
         </div>
         <!--登录ftp-->
-        <div class="main-content" v-loading="loading">
+        <div class="main-content"
+             v-loading="loading"
+             element-loading-text="ftp登陆中，请稍等">
             <div v-show="!isLogin" class="logo">
                 <i class="el-icon-upload"></i>
                 |
@@ -51,8 +53,8 @@
                     </el-form-item>
                 </el-row>
             </el-form>
-            <folder v-show=" isLogin"
-                    :host="platform.face_host"
+            <folder v-show="isLogin"
+                    :host="host"
                     :isLogin="isLogin"
                     :defaultData="folderData"
                     :currentPath="currentPath"
@@ -131,7 +133,9 @@
                 dialogVisible: false,
 
                 loading: false,
-                faceLoading: false
+                faceLoading: false,
+
+                host: ''
             }
         },
         components: {
@@ -171,6 +175,7 @@
                         })
                             .then(res => {
                                 this.faceLoading = false;
+                                this.host = this.platform.face_host;
                                 sessionStorage.setItem('cloudwalk-token', res.data.token);
                                 this.isLogin = true;
                                 this.dialogVisible = false;
@@ -227,9 +232,6 @@
                 ipcRenderer.send('userInfoGet');
                 ipcRenderer.on('userInfoSend', (event, {message, data}) => {
                     if (message === 'infoUpdated') {
-                        console.log(event)
-                        console.log(message)
-                        console.log(data)
                         this.convertParams(data)
                     }
                 });
@@ -241,6 +243,7 @@
                 this.form.user = searchParams.get('username');
                 this.form.password = searchParams.get('password');
                 this.form.port = searchParams.get('port');
+                this.sendConnect();
             }
         }
     }

@@ -87,11 +87,11 @@ import { autoUpdater } from 'electron-updater'
 // app.on('ready', () => {
 //   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 // })
-const feedUrl = `http://localhost:8080/win32`; // 更新包位置
+const feedUrl = `https://github.com/cker321/electron-ftp-app`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
   // console.log("update");
-  // checkForUpdates();
+  checkForUpdates();
 });
 
 
