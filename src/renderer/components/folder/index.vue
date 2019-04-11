@@ -1,5 +1,6 @@
 <template>
-    <div class="folder">
+    <div class="folder"
+         v-loading="loading">
         <div class="host">
             <el-tag type="success" closable @close="logOut">已连接至：{{host}}</el-tag>
         </div>
@@ -91,7 +92,8 @@
             return {
                 tableData: [],
                 newCurrentPath: '',
-                dialogVisible: false
+                dialogVisible: false,
+                loading: false
             }
         },
         computed: {
@@ -134,7 +136,8 @@
             currentPath(val) {
                 this.newCurrentPath = val;
                 this.splitPath();
-            }
+            },
+            host(val) {console.log(val)}
         },
         methods: {
             logOut() {
@@ -173,12 +176,17 @@
                 this.changePathFull(this.newCurrentPath.length - 2)
             },
             changePath(path) {
+                this.loading = true;
                 this.$get('changePath', {path})
                     .then(res => {
                         this.newCurrentPath = res.currentPath;
                         this.tableData = res.data;
                         this.splitPath();
                         // 跳转到folder
+                        this.loading = false;
+                    })
+                    .catch(() => {
+                        this.loading = false;
                     })
             },
             rmdir(path) {
@@ -217,6 +225,7 @@
                 this.newCurrentPath = this.newCurrentPath.split('/');
             },
             changePathFull(key) {
+                this.loading = true;
                 let fullPath = '';
                 for (let i = 0; i <= key; i++) {
                     if (i == key) {
@@ -227,9 +236,13 @@
                 }
                 this.$get('changePathFull', {fullPath})
                     .then(res => {
+                        this.loading = false;
                         this.newCurrentPath = fullPath;
                         this.tableData = res.data;
                         this.splitPath();
+                    })
+                    .catch(() => {
+                        this.loading = false;
                     })
             },
             handleUploadSuccess() {

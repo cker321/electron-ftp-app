@@ -18,13 +18,16 @@ import {
 
 const express = require('express')
 const app = express()
-const ERROR_CODE = '0000001'
-const dataOk = {code: '0000000', msg: '请求处理成功'};
-const dataEr = {code: ERROR_CODE, msg: ''};
-var bodyparser = require('body-parser');
+const progressStream = require('progress-stream');
+const bodyparser = require('body-parser');
 
 let GloabalCurrentPath = '';
 // let uploadFiles = []; // 上传的文件名
+
+const ERROR_CODE = '0000001'
+const dataOk = {code: '0000000', msg: '请求处理成功'};
+const dataEr = {code: ERROR_CODE, msg: ''};
+
 
 app.use(bodyparser.urlencoded({extende:true}));
 app.use(bodyparser.json())
@@ -88,14 +91,34 @@ app.get('/changePathFull', function (req, res) {
 // })
 
 // 无http请求文件上传
-app.post('/fileInfoUploads', function (req, res) {
+
+app.post('/fileInfoUploads', function (req, res, next) {
     let resData = Object.assign({}, dataOk);
-    ftpUploads (req.body.filePath ,function (fileNames) {
+    ftpUploads (req.body.filePath, res,function (percentage) {
+        // let progress = progressStream({length: '0'});
+        // req.pipe(percentage);
+        // progress.headers = req.headers;
+        //
+        // // 获取上传文件的真实长度（针对 multipart)
+        // progress.on('length', function nowIKnowMyLength (total, actualLength) {
+        //     console.log('actualLength: %s', total);
+        //     progress.setLength(total);
+        // });
+        // // 获取上传进度
+        // progress.on('progress', function (obj) {
+        //     console.log('progress: %s', percentage);
+        // });
+
+    }, function (fileNames) {
         resData.fileNames = fileNames
         resData.currentPath = GloabalCurrentPath;
-        res.send(resData);
-    })
+        res.send(resData)
+    });
+});
+app.post('/fileInfoUploads', function (req, res) {
+    res.send({ok: 1});
 })
+
 
 // 新建文件夹
 app.get('/newFolder', function (req, res) {

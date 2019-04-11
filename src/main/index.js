@@ -1,4 +1,6 @@
 import { app, BrowserWindow,ipcMain } from 'electron'
+const fs = require('fs'); // 引入fs模块
+const path = require('path');
 // import { autoUpdater } from 'electron-updater'
 import './app'
 /**
@@ -29,14 +31,13 @@ function createWindow () {
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  // mainWindow.openDevTools();
+  mainWindow.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 
   webContents = mainWindow.webContents;
-
 }
 
 app.on('ready', createWindow)
@@ -93,6 +94,9 @@ ipcMain.on('update', (e, arg) => {
   // checkForUpdates();
 });
 
+
+
+
 let checkForUpdates = () => {
   // 配置安装包远端服务器
   autoUpdater.setFeedURL(feedUrl);
@@ -132,3 +136,78 @@ function sendUpdateMessage(message, data) {
   console.log({ message, data });
   webContents.send('message', { message, data });
 }
+
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+}
+console.log(process.argv)
+const args = [];
+if (!app.isPackaged) {
+  args.push(path.resolve(process.argv[1]));
+}
+args.push('--');
+
+// 定义协议名称
+const PROTOCOL = process.env.NODE_ENV === 'development' ?  'FBDFtpDev' : 'FBDFtp';
+// 写入协议
+app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, args);
+// 出入参数
+let queryParam = {};
+let infoEvent = '';
+
+handleArgv(process.argv);
+
+app.on('second-instance', (event, argv) => {
+  if (process.platform === 'win32') {
+    // Windows
+    handleArgv(argv);
+  }
+});
+
+// macOS
+app.on('open-url', (event, urlStr) => {
+  handleUrl(urlStr);
+});
+
+function handleArgv(argv) {
+  const prefix = `${PROTOCOL}:`;
+  const offset = app.isPackaged ? 1 : 2;
+  const url = argv.find((arg, i) => {
+    return i >= offset && arg.startsWith('fbdftp');
+  });
+  if (url) handleUrl(url);
+}
+
+function handleUrl(urlStr) {
+  const urlObj = new URL(urlStr);
+  infoEvent = 'infoUpdated'
+  queryParam = urlObj.search.replace('?', '')
+  // fs.writeFile('C:/Users/yckj1041/AppData/Local/Programs/faceBigData-VideoUploader/url.txt', JSON.stringify(urlObj), function(err) {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //   console.log('Saved.');
+  // });
+  // fs.writeFile('C:/Users/yckj1041/AppData/Local/Programs/faceBigData-VideoUploader/url1.txt', JSON.stringify(queryParam), function(err) {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //   console.log('Saved.');
+  // });
+  // console.log(urlObj.query); // -> host=1&port=2&username=admin&password=123456
+  // console.log(searchParams.get('host')); // -> 1
+  // console.log(searchParams.get('port')); // -> 1
+  // console.log(searchParams.get('username')); // -> 2
+  // console.log(searchParams.get('password')); // -> 2
+}
+
+function sendUserInfo(message, data) {
+  webContents.send('userInfoSend', { message, data });
+}
+
+ipcMain.on('userInfoGet', (e, arg) => {
+  sendUserInfo(infoEvent, queryParam)
+});

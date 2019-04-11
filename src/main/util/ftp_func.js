@@ -78,17 +78,27 @@ function ftpUpload(fileNameArr, cb) {
 
 // 无http直接上传
 // 上传文件
-function ftpUploads(filePaths, cb) {
+function ftpUploads(filePaths, res, cb, cbEnd) {
     let fileTemp = [];
-    console.log(filePaths)
     filePaths.forEach(function (fileObj, index) {
         let fileName = fileObj.name;
         let filePath = fileObj.path.replace(/\//g, '/');
-        talk.put(filePath, fileName, function(err) {
+        let readFile = fs.createReadStream(filePath),
+        cur = 0,
+        total = fs.statSync(filePath).size;
+        res.writeHeader(200, {"Content-Length": total});
+        readFile.on('data', function(d) {
+            // console.log(`接收到 ${cur} 字节的数据`);
+            cur += d.length;
+            // 返回实时进度
+            cb && cb(total, ((cur / total) * 100).toFixed(1))
+            // console.log(((cur / total) * 100).toFixed(1) + '% complete');
+        });
+        talk.put(readFile, fileName, function(err) {
             if (err) throw err;
             fileTemp.push(fileName);
             if (index === filePaths.length - 1) {
-                cb && cb(fileTemp);
+                cbEnd && cbEnd(fileTemp);
             }
         });
     })
@@ -119,7 +129,6 @@ function rmdir(path, cb) {
 
 // 删除文件
 function deleteFile(path, cb) {
-    console.log(path)
     talk.delete(path, function (err) {
         if (err) throw err;
         cb && cb();

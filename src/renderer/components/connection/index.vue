@@ -16,13 +16,13 @@
             </div>
         </div>
         <!--登录ftp-->
-        <div class="main-content"  v-loading="loading">
-            <div v-show="!folderData.length || !isLogin" class="logo">
+        <div class="main-content" v-loading="loading">
+            <div v-show="!isLogin" class="logo">
                 <i class="el-icon-upload"></i>
                 |
                 <img class="gray" src="./facebigdata.png" width="36" alt="">
             </div>
-            <el-form v-show="!folderData.length || !isLogin" ref="form" :model="form" label-position="top" label-width="80px">
+            <el-form v-show="!isLogin" ref="form" :model="form" label-position="top" label-width="80px">
                 <el-row :gutter="20">
                     <el-col :span="6">
                         <el-form-item label="请输入IP">
@@ -51,12 +51,12 @@
                     </el-form-item>
                 </el-row>
             </el-form>
-            <folder  v-show="folderData.length && isLogin"
-                :host="form.host"
-                :isLogin="isLogin"
-                :defaultData="folderData"
-                :currentPath="currentPath"
-                @logout="folderData = []; isLogin = false"></folder>
+            <folder v-show=" isLogin"
+                    :host="platform.face_host"
+                    :isLogin="isLogin"
+                    :defaultData="folderData"
+                    :currentPath="currentPath"
+                    @logout="folderData = []; isLogin = false"></folder>
         </div>
         <!--登录到火眼-->
         <el-dialog center
@@ -68,7 +68,7 @@
             <el-form ref="platform"
                      :model="platform"
                      :rules="[]">
-                 <el-row :gutter="20">
+                <el-row :gutter="20">
                     <el-col :span="8">
                         <el-form-item label="火眼地址"
                                       prop="face_host"
@@ -107,8 +107,8 @@
 
     export default {
         name: 'connection',
-        data () {
-            return  {
+        data() {
+            return {
                 form: {
                     host: '192.168.10.29',
                     user: 'jfedu1',
@@ -137,18 +137,19 @@
         components: {
             folder
         },
-        mounted () {
+        mounted() {
             this.updateProgram();
             this.updateConfirm();
+            this.getUserInfo();
         },
         methods: {
             // 登录ftp
-            sendConnect () {
+            sendConnect() {
                 this.loading = true;
-                this.$get('startFtp',  this.form)
+                this.$get('startFtp', this.form)
                     .then(res => {
                         this.loading = false;
-                        if(res.code === '0000000') {
+                        if (res.code === '0000000') {
                             this.folderData = res.data;
                             this.currentPath = res.currentPath;
                             // 登录火眼界面
@@ -159,7 +160,7 @@
                     })
             },
             // 登录火眼
-            loginToCloudWalk () {
+            loginToCloudWalk() {
                 this.$refs.platform.validate(valid => {
                     if (valid) {
                         let host = this.platform.face_host.split(':')[0];
@@ -173,7 +174,9 @@
                                 sessionStorage.setItem('cloudwalk-token', res.data.token);
                                 this.isLogin = true;
                                 this.dialogVisible = false;
-                                this.resetCloudwalk();
+                                this.$nextTick(() => {
+                                    this.resetCloudwalk();
+                                })
                             })
                             .catch(err => {
                                 this.faceLoading = false;
@@ -184,47 +187,67 @@
 
             },
             // resetFields
-            resetCloudwalk () {
+            resetCloudwalk() {
                 this.$refs.platform.resetFields();
             },
             // 最小化
-            minimize () {
+            minimize() {
                 ipcRenderer.send('minimize');
             },
             // 关闭
-            close () {
+            close() {
                 this.$confirm('确认退出本应用吗？', '退出程序', {
                     type: 'warning',
                 })
-                .then(_ => {
-                    ipcRenderer.send('close')
-                    done();
-                })
+                    .then(_ => {
+                        ipcRenderer.send('close')
+                        done();
+                    })
             },
             // 最大化
-            maximize () {
+            maximize() {
                 ipcRenderer.send('maximize');
                 this.normalState = !this.normalState;
             },
             // 更新app
-            updateProgram () {
+            updateProgram() {
                 ipcRenderer.send('update')
             },
-            updateConfirm () {
-                ipcRenderer.on('message',(event,{message,data}) => {
+            updateConfirm() {
+                ipcRenderer.on('message', (event, {message, data}) => {
                     if (message === 'isUpdateNow') {
                         if (confirm('是否现在更新？')) {
                             ipcRenderer.send('updateNow');
                         }
                     }
                 });
+            },
+            // getUserInfo
+            getUserInfo() {
+                ipcRenderer.send('userInfoGet');
+                ipcRenderer.on('userInfoSend', (event, {message, data}) => {
+                    if (message === 'infoUpdated') {
+                        console.log(event)
+                        console.log(message)
+                        console.log(data)
+                        this.convertParams(data)
+                    }
+                });
+            },
+            // 转换
+            convertParams (params) {
+                let searchParams = new URLSearchParams(params);
+                this.form.host = searchParams.get('host');
+                this.form.user = searchParams.get('username');
+                this.form.password = searchParams.get('password');
+                this.form.port = searchParams.get('port');
             }
         }
     }
 </script>
 
 <style scoped lang="less">
-    .connection{
+    .connection {
         display: flex;
         position: fixed;
         flex-direction: column;
@@ -234,45 +257,54 @@
         right: 0;
         bottom: 0;
         background-color: #FFF;
-        .logo{
+
+        .logo {
             font-size: 40px;
             padding: 10px 0 10px;
             line-height: 40px;
-            .gray{
+
+            .gray {
                 /*-webkit-filter: grayscale(100%);*/
                 /*filter: grayscale(100%);*/
                 vertical-align: middle;
             }
-            .el-icon-upload{
+
+            .el-icon-upload {
                 vertical-align: middle;
                 color: #409eff;
             }
         }
-        .main-content{
+
+        .main-content {
             flex: 1;
             padding: 30px;
         }
-        .title-bar{
+
+        .title-bar {
             height: 30px;
             line-height: 30px;
-            background-color: rgba(0,0,0,.5);
-            color: rgba(255,255,255,0.9);
-            -webkit-app-region:drag;
-            .window-button{
+            background-color: rgba(0, 0, 0, .5);
+            color: rgba(255, 255, 255, 0.9);
+            -webkit-app-region: drag;
+
+            .window-button {
                 position: absolute;
                 right: 0;
                 top: 0;
                 display: flex;
-                -webkit-app-region:no-drag;
+                -webkit-app-region: no-drag;
+
                 span {
                     flex: 1;
                     padding: 0 10px;
                     cursor: pointer;
-                    &:hover{
-                        background-color: rgba(255,255,255,.5);
+
+                    &:hover {
+                        background-color: rgba(255, 255, 255, .5);
                     }
-                    &.close:hover{
-                        background-color: rgba(255,0,0,0.6);
+
+                    &.close:hover {
+                        background-color: rgba(255, 0, 0, 0.6);
                     }
                 }
             }
@@ -280,10 +312,11 @@
     }
 </style>
 <style>
-    .connection .el-form--label-top .el-form-item__label{
+    .connection .el-form--label-top .el-form-item__label {
         padding: 0;
     }
-    .tr{
+
+    .tr {
         text-align: right;
     }
 </style>
