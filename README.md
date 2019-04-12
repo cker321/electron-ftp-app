@@ -1,7 +1,7 @@
 # electron-ftp-app
 
 > Electron + Vue + Node.js + FTP 的桌面app
-
+>> 这个版本用async来改造node端！
 #### Build Setup
 
 ``` bash
