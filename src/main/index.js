@@ -91,7 +91,7 @@ const feedUrl = `https://github.com/cker321/electron-ftp-app`; // 更新包位�
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
   // console.log("update");
-  checkForUpdates();
+  // checkForUpdates();
 });
 
 
@@ -133,7 +133,7 @@ let checkForUpdates = () => {
 
 // 主进程主动发送消息给渲染进程函数
 function sendUpdateMessage(message, data) {
-  console.log({ message, data });
+  // console.log({ message, data });
   webContents.send('message', { message, data });
 }
 
@@ -143,7 +143,6 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 }
-console.log(process.argv)
 const args = [];
 if (!app.isPackaged) {
   args.push(path.resolve(process.argv[1]));
