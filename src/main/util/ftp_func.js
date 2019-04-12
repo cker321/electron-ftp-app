@@ -4,6 +4,7 @@
  */
 let fs = require('fs');
 let client = require('ftp');
+// ftp会话对象
 let talk = ''
 let currentPath = ''
 const ERROR_CODE = '0000001'
@@ -33,24 +34,28 @@ function startFtp (obj, cb) {
     talk = new client();
     // 连接成功
     talk.on('ready', function() {
-        getFileDir(cb);
+        // getFileDir(cb);
+        return 'ok'
     });
     // 连接错误
     talk.on('error', function (err) {
-        cb(ERROR_CODE)
+        cb(ERROR_CODE);
     })
+    // 会话保持时间
     params.keepalive = 1000;
     // 开启连接
     talk.connect(params);
-
 }
 
 // 获取当前目录的文件
-function getFileDir(cb) {
-    talk.list(function (err, list) {
-        if (err) throw err;
-        cb && cb(list);
-    })
+let getFileDir = async function () {
+    let list = await new Promise((resolve, reject) => {
+        talk.list(function (err, list) {
+            if (err) reject(err);
+            resolve(list);
+        })
+    });
+    return list;
 }
 
 // 获取当前目录层级
@@ -104,7 +109,6 @@ function ftpUploads(filePaths, res, cb, cbEnd) {
     })
 }
 
-
 // 新建文件夹
 function mkdir(path, cb, newFolder) {
     getFileDir(function (list) {
@@ -119,6 +123,7 @@ function mkdir(path, cb, newFolder) {
         })
     });
 }
+
 // 删除文件夹
 function rmdir(path, cb) {
     talk.rmdir(path, true, function (err) {
@@ -170,5 +175,6 @@ export {
     rmdir,
     logOut,
     deleteFile,
-    clearCache
+    clearCache,
+    getFileDir
 };

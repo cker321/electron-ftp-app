@@ -8,6 +8,7 @@ import {
     startFtp,
     getCurrentPath,
     ftpUpload,
+    getFileDir,
     ftpUploads,
     mkdir,
     rmdir,
@@ -32,7 +33,12 @@ const dataEr = {code: ERROR_CODE, msg: ''};
 app.use(bodyparser.urlencoded({extende:true}));
 app.use(bodyparser.json())
 
-app.get('/startFtp', function(req, res) {
+app.get('/startFtp', async function(req, res) {
+
+    let connectData = await startFtp(req.query);
+    let directories = await getFileDir();
+    console.log(directories)
+
     startFtp (req.query, function (data) {
         if (data === ERROR_CODE) {
             let resData = Object.assign({}, dataEr, {msg: '登录失败！'});
@@ -40,7 +46,7 @@ app.get('/startFtp', function(req, res) {
         } else {
             getCurrentPath(function (currentPath) {
                 let resData = Object.assign({}, dataOk);
-                currentPath = currentPath
+                currentPath = currentPath;
                 resData.data = data
                 resData.currentPath = currentPath
                 res.send(resData);
@@ -156,7 +162,6 @@ app.get('/removeDirectory', function (req, res) {
 // 删除文件
 app.get('/deleteFile', function (req, res) {
     let resData = {};
-    console.log(req.query.fileName)
     deleteFile(GloabalCurrentPath + '/' + req.query.fileName, function (err) {
         if (err) {
             resData = Object.assign({}, dataEr);
