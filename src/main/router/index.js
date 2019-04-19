@@ -3,12 +3,12 @@
  * @author zhuRui
  */
 import {
-    changePath,
-    changePathFull,
+    changeDirectory,
+    changeDirectoryFull,
     startFtp,
     getCurrentPath,
     ftpUpload,
-    getFileDir,
+    getFileDirectory,
     ftpUploads,
     mkdir,
     rmdir,
@@ -19,7 +19,7 @@ import {
 
 const express = require('express')
 const app = express()
-const progressStream = require('progress-stream');
+// const progressStream = require('progress-stream');
 const bodyparser = require('body-parser');
 
 let GloabalCurrentPath = '';
@@ -34,52 +34,60 @@ app.use(bodyparser.urlencoded({extende:true}));
 app.use(bodyparser.json())
 
 app.get('/startFtp', async function(req, res) {
-
+    // 登录
     let connectData = await startFtp(req.query);
-    let directories = await getFileDir();
-    console.log(directories)
+    let resData = {};
 
-    startFtp (req.query, function (data) {
-        if (data === ERROR_CODE) {
-            let resData = Object.assign({}, dataEr, {msg: '登录失败！'});
-            res.send(resData);
-        } else {
-            getCurrentPath(function (currentPath) {
-                let resData = Object.assign({}, dataOk);
-                currentPath = currentPath;
-                resData.data = data
-                resData.currentPath = currentPath
-                res.send(resData);
-            });
-        }
-    })
+    if (connectData === ERROR_CODE) {
+        resData = Object.assign({}, dataEr, {msg: '登录失败！'});
+    } else {
+        let directories = await getFileDirectory();
+        let currentPath = await getCurrentPath();
+        resData = Object.assign({}, dataOk);
+        // 当前目录文件
+        resData.data = directories
+        // 当前目录
+        resData.currentPath = currentPath
+    }
+    res.send(resData);
 });
 
-app.get('/changePath', function (req, res) {
-    let path = req.query.path;
-    changePath(path, function (data) {
-        getCurrentPath( function (currentPath) {
-            let resData = Object.assign({}, dataOk);
-            resData.data = data
-            resData.currentPath = currentPath;
-            GloabalCurrentPath = currentPath;
-            res.send(resData);
-        });
+app.get('/changeDirectory', async function (req, res) {
 
-    })
+    let path = req.query.path;
+
+    let data = await changeDirectory(path);
+
+    let currentPath = await getCurrentPath();
+
+    let resData = Object.assign({}, dataOk);
+
+    resData.data = data;
+
+    resData.currentPath = currentPath;
+
+    GloabalCurrentPath = currentPath;
+
+    res.send(resData);
 })
 
-app.get('/changePathFull', function (req, res) {
+app.get('/changeDirectoryFull', async function (req, res) {
     let fullPath = req.query.fullPath;
-    changePathFull(fullPath,function (data) {
-        getCurrentPath(function (currentPath) {
-            let resData = Object.assign({}, dataOk);
-            resData.data = data
-            resData.currentPath = currentPath;
-            GloabalCurrentPath = currentPath;
-            res.send(resData);
-        });
-    })
+
+    let data = await changeDirectoryFull(fullPath);
+
+    let currentPath = await getCurrentPath();
+
+    let resData = Object.assign({}, dataOk);
+
+    resData.data = data;
+
+    resData.currentPath = currentPath;
+
+    GloabalCurrentPath = currentPath;
+
+    res.send(resData);
+
 })
 
 // 文件上传
@@ -124,24 +132,19 @@ app.post('/fileInfoUploads', function (req, res, next) {
 
 
 // 新建文件夹
-app.get('/newFolder', function (req, res) {
+app.get('/newFolder', async function (req, res) {
     let resData = {};
-    try {
-        mkdir(GloabalCurrentPath + '/' + req.query.newFolder, function (err) {
-            if (err) {
-                resData = Object.assign({}, dataEr);
-                resData.msg = err;
-                res.send(resData);
-            } else {
-                resData = Object.assign({}, dataOk);
-                res.send(resData);
-            }
-        }, req.query.newFolder)
-    } catch (e) {
-        resData = Object.assign({}, dataEr);
-        resData.msg = e;
-        res.send(resData);
-    }
+    mkdir(req.query.newFolder, req.query.newFolder)
+        .then(resolve => {
+            console.log(resolve)
+            resData = Object.assign({}, dataOk);
+            res.send(resData);
+        })
+        .catch(err => {
+            resData = Object.assign({}, dataEr);
+            resData.msg = err;
+            res.send(resData);
+        });
 })
 
 // 删除文件夹

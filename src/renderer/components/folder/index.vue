@@ -177,7 +177,7 @@
             },
             changePath(path) {
                 this.loading = true;
-                this.$get('changePath', {path})
+                this.$get('changeDirectory', {path})
                     .then(res => {
                         this.newCurrentPath = res.currentPath;
                         this.tableData = res.data;
@@ -234,7 +234,7 @@
                         fullPath += this.newCurrentPath[i] + '/'
                     }
                 }
-                this.$get('changePathFull', {fullPath})
+                this.$get('changeDirectoryFull', {fullPath})
                     .then(res => {
                         this.loading = false;
                         this.newCurrentPath = fullPath;

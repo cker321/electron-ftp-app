@@ -2,53 +2,73 @@
  * 定义前端使用的接口
  * @author zhuRui
  */
-let fs = require('fs');
-let client = require('ftp');
+const fs = require('fs');
+const client = require('ftp');
 // ftp会话对象
 let talk = ''
-let currentPath = ''
+// 错误码
 const ERROR_CODE = '0000001'
 
 // 改变路径（相对）
-function changePath (path, cb) {
-    talk.pwd(function (err, dir) {
-        if (err) throw err;
-        talk.cwd(`${dir}/${path}`, function (err, currentDir) {
-            if (err) throw err;
-            getFileDir(cb);
+let changeDirectory = async function (path) {
+    let currentDirectory = await new Promise((resolve, reject) => {
+        talk.pwd(function (err, dir) {
+            if (err) reject(err);
+            resolve(dir)
         })
-    })
+    });
+    let fileDirectory = await new Promise((resolve, reject) => {
+        talk.cwd(`${currentDirectory}/${path}`, function (err) {
+            if (err) reject(err) ;
+            resolve('ok')
+        })
+    });
+    fileDirectory = await getFileDirectory();
+    return fileDirectory;
 }
 
 // 改变路径（全）
-function changePathFull (path, cb) {
-    talk.cwd(path, function (err, currentDir) {
-        if (err) throw err;
-        getFileDir(cb);
-    })
+let changeDirectoryFull = async function (path, cb) {
+    let fileDirectory = await new Promise((resolve, reject) => {
+        talk.cwd(path, function (err) {
+            if (err) reject(err) ;
+            resolve('ok')
+        })
+    });
+    fileDirectory = await getFileDirectory();
+    return fileDirectory;
+
+    // talk.cwd(path, function (err, currentDir) {
+    //     if (err) throw err;
+    //     getFileDirectory(cb);
+    // })
 }
 
 // 开启连接
-function startFtp (obj, cb) {
+let startFtp = async function (obj, cb) {
     let params = Object.assign({}, obj);
-    talk = new client();
-    // 连接成功
-    talk.on('ready', function() {
-        // getFileDir(cb);
-        return 'ok'
-    });
-    // 连接错误
-    talk.on('error', function (err) {
-        cb(ERROR_CODE);
+    let connection = await new Promise((resolve, reject) => {
+        talk = new client();
+        // 连接成功
+        talk.on('ready', function() {
+            // let fileDir = await getFileDirectory(cb);
+            // return 'ok'
+            resolve('ok');
+        });
+        // 连接错误
+        talk.on('error', function (err) {
+            reject(ERROR_CODE);
+        })
+        // 会话保持时间
+        params.keepalive = 1000;
+        // 开启连接
+        talk.connect(params);
     })
-    // 会话保持时间
-    params.keepalive = 1000;
-    // 开启连接
-    talk.connect(params);
+    return connection;
 }
 
 // 获取当前目录的文件
-let getFileDir = async function () {
+let getFileDirectory = async function () {
     let list = await new Promise((resolve, reject) => {
         talk.list(function (err, list) {
             if (err) reject(err);
@@ -59,12 +79,14 @@ let getFileDir = async function () {
 }
 
 // 获取当前目录层级
-function getCurrentPath(cb) {
-    talk.pwd(function (err, dir) {
-        if (err) throw err;
-        currentPath = dir;
-        cb && cb(currentPath);
-    })
+let getCurrentPath = async function (cb) {
+    let currentPath = await new Promise((resolve, reject) => {
+        talk.pwd(function (err, dir) {
+            if (err) reject(err);
+            resolve(dir);
+        })
+    });
+    return currentPath;
 }
 
 // 上传文件
@@ -110,18 +132,28 @@ function ftpUploads(filePaths, res, cb, cbEnd) {
 }
 
 // 新建文件夹
-function mkdir(path, cb, newFolder) {
-    getFileDir(function (list) {
-        let index = list.findIndex(item => {return (item.name === newFolder && item.type === 'd')})
+let mkdir = async function (path, newFolder) {
+    // 获取当前目录
+    let currentDirectory = await getCurrentPath();
+    // 获取当前目录文件
+    let fileDirectory = await getFileDirectory();
+    // 匹配是否有同名文件夹
+    let index = fileDirectory.findIndex(item => {
+        return item.name === newFolder && item.type === 'd'
+    });
+    // 返回
+    let promise = await new Promise((resolve, reject) => {
         if (index >= 0) {
-            cb && cb('存在同名文件夹！');
+            reject('存在同名文件夹！');
             return;
         }
-        talk.mkdir(path, function (err) {
-            if (err) throw err;
-            cb && cb();
+        talk.mkdir(currentDirectory + '/' + path, function (err) {
+            if (err) reject(err);
+            resolve('ok')
+            // cb && cb();
         })
     });
+    return promise;
 }
 
 // 删除文件夹
@@ -165,8 +197,8 @@ function clearCache(path) {
 }
 
 export {
-    changePath,
-    changePathFull,
+    changeDirectory,
+    changeDirectoryFull,
     startFtp,
     getCurrentPath,
     ftpUpload,
@@ -176,5 +208,5 @@ export {
     logOut,
     deleteFile,
     clearCache,
-    getFileDir
+    getFileDirectory
 };

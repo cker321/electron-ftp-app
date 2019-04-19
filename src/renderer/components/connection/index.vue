@@ -112,7 +112,7 @@
         data() {
             return {
                 form: {
-                    host: '192.168.14.12',
+                    host: '192.168.10.88',
                     user: 'jfedu1',
                     password: '123456',
                     port: 21,
@@ -279,6 +279,7 @@
         }
 
         .main-content {
+            position: relative;
             flex: 1;
             padding: 30px;
         }
