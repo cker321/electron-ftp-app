@@ -1,7 +1,8 @@
 # electron-ftp-app
 
 > Electron + Vue + Node.js + FTP 的桌面app
->> 这个版本用async来改造node端！
+>> 使用async await改造node，支持浏览器端打开 
+
 #### Build Setup
 
 ``` bash
