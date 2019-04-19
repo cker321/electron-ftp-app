@@ -62,8 +62,10 @@
                     width="200"
                     label="操作">
                 <template slot-scope="props">
-                    <el-button v-if="props.row.type === 'd'" @click="rmdir(props.row.name)" type="text">删除目录</el-button>
-                    <el-button v-else @click="rmfile(props.row.name)" type="text">删除文件</el-button>
+                    <!--<el-button v-if="props.row.type === 'd'" @click="rmdir(props.row.name)" type="text">删除目录</el-button>-->
+                    <!--<el-button v-else @click="rmfile(props.row.name)" type="text">删除文件</el-button>-->
+                    <el-button v-if="props.row.type !== 'd'" @click="rmfile(props.row.name)" type="text">删除文件</el-button>
+                    <span v-else>-</span>
                 </template>
             </el-table-column>
         </el-table>

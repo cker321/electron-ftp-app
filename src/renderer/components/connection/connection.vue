@@ -110,7 +110,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="resetCloudwalk();dialogVisible = false;" v-loading="faceLoading">取 消</el-button>
-                <el-button type="primary" @click="loginToCloudWalk" v-loading="faceLoading">确 定</el-button>
+                <el-button type="primary" @click="loginToCloudWalk()" v-loading="faceLoading">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -167,7 +167,6 @@
             // 登录ftp
             async sendConnect() {
                 this.$refs.form.validate(async (valid) => {
-                    debugger
                     if (valid) {
                         this.loading = true;
                         await this.$get('startFtp', this.form)
@@ -187,6 +186,7 @@
             },
             // 登录火眼
             async loginToCloudWalk(alreadyMD5 = false) {
+                debugger
                 this.$refs.platform.validate(async (valid) => {
                     if (valid) {
                         let host = this.platform.face_host.split(':')[0];
