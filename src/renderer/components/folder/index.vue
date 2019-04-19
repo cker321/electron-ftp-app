@@ -262,8 +262,8 @@
             padding-bottom: 10px;
             margin-bottom: 10px;
             position: absolute;
-            left: 20px;
-            top: 50px;
+            left: 0;
+            top: 0;
         }
 
         .currentPath {
@@ -282,8 +282,7 @@
         .toolBar {
             padding: 10px 0;
         }
-
-        /*position: fixed;*/
+        position: relative;
         z-index: 10;
         left: 0;
         top: 0;
