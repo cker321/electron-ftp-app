@@ -156,7 +156,8 @@
                                 this.$router.push({
                                     name: 'connection'
                                 })
-                                this.$emit('logout')
+                                this.$emit('logout');
+                                this.newCurrentPath = [];
                             } else {
                                 this.$notify.error({
                                     message: '退出失败',
