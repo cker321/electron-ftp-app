@@ -54,6 +54,7 @@
                 </el-row>
             </el-form>
             <folder v-show="isLogin"
+                    ref="folder"
                     :host="host"
                     :isLogin="isLogin"
                     :defaultData="folderData"
@@ -135,7 +136,10 @@
                 loading: false,
                 faceLoading: false,
 
-                host: ''
+                host: '',
+
+                // 自动跳转目录全路径
+                changePathFull: '/dev/shm'
             }
         },
         components: {
@@ -148,9 +152,9 @@
         },
         methods: {
             // 登录ftp
-            sendConnect() {
+            async sendConnect() {
                 this.loading = true;
-                this.$get('startFtp', this.form)
+                await this.$get('startFtp', this.form)
                     .then(res => {
                         this.loading = false;
                         if (res.code === '0000000') {
@@ -164,13 +168,13 @@
                     })
             },
             // 登录火眼
-            loginToCloudWalk() {
-                this.$refs.platform.validate(valid => {
+            async loginToCloudWalk(alreadyMD5 = false) {
+                this.$refs.platform.validate(async (valid) => {
                     if (valid) {
                         let host = this.platform.face_host.split(':')[0];
                         this.faceLoading = true;
-                        this.$_post(`http://${host}:10002/facebigdata/auth/login`, {
-                            password: md5(this.platform.face_password),
+                        await this.$_post(`http://${host}:10002/facebigdata/auth/login`, {
+                            password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
                             username: "admin"
                         })
                             .then(res => {
@@ -205,7 +209,7 @@
                     type: 'warning',
                 })
                     .then(_ => {
-                        ipcRenderer.send('close')
+                        ipcRenderer.send('close');
                         done();
                     })
             },
@@ -227,23 +231,37 @@
                     }
                 });
             },
-            // getUserInfo
-            getUserInfo() {
+            // 从火眼url跳转到此APP
+            async getUserInfo() {
                 ipcRenderer.send('userInfoGet');
-                ipcRenderer.on('userInfoSend', (event, {message, data}) => {
+                ipcRenderer.on('userInfoSend', async (event, {message, data}) => {
                     if (message === 'infoUpdated') {
                         this.convertParams(data)
+                        // 登录ftp
+                        await this.sendConnect();
+                        // 登录火眼
+                        await this.loginToCloudWalk(true);
+                        // 跳转到默认目录
+                        await this.$refs.folder.autoChangePathFull(this.changePathFull);
+                        // 打开上传窗口
+                        this.$refs.folder.addFile();
                     }
                 });
             },
             // 转换
             convertParams (params) {
                 let searchParams = new URLSearchParams(params);
+                // ftp登录参数
                 this.form.host = searchParams.get('host');
                 this.form.user = searchParams.get('username');
                 this.form.password = searchParams.get('password');
                 this.form.port = searchParams.get('port');
-                this.sendConnect();
+                // 火眼登录参数
+                this.platform.face_host = searchParams.get('faceHost')
+                this.platform.face_user = searchParams.get('faceUser')
+                this.platform.face_password = searchParams.get('facePassword');
+                // 跳转目录
+                this.changePathFull = searchParams.get('changePathFull');
             }
         }
     }
@@ -289,8 +307,8 @@
             line-height: 30px;
             background-color: rgba(0, 0, 0, .5);
             color: rgba(255, 255, 255, 0.9);
+            /*配置此区域拖动*/
             -webkit-app-region: drag;
-
             .window-button {
                 position: absolute;
                 right: 0;

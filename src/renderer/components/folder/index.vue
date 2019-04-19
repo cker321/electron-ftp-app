@@ -245,6 +245,18 @@
                         this.loading = false;
                     })
             },
+            async autoChangePathFull (pathFull) {
+                await this.$get('changeDirectoryFull', {fullPath: pathFull})
+                    .then(res => {
+                        this.loading = false;
+                        this.newCurrentPath = pathFull;
+                        this.tableData = res.data;
+                        this.splitPath();
+                    })
+                    .catch(() => {
+                        this.loading = false;
+                    })
+            },
             handleUploadSuccess() {
                 this.changePathFull(this.newCurrentPath.length - 1)
             }
@@ -256,7 +268,6 @@
         .fl {
             float: left;
         }
-
         .host {
             color: #ccc;
             padding-bottom: 10px;
