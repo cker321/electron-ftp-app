@@ -24,25 +24,38 @@
                 |
                 <img class="gray" src="./facebigdata.png" width="36" alt="">
             </div>
-            <el-form v-show="!isLogin" ref="form" :model="form" label-position="top" label-width="80px">
+            <el-form v-show="!isLogin"
+                     ref="form"
+                     :model="form"
+                     :rules="[]"
+                     label-position="top"
+                     label-width="80px">
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <el-form-item label="请输入IP">
+                        <el-form-item label="请输入IP"
+                                      prop="host"
+                                      :rules="{required: true, message: 'IP不能为空', trigger: 'blur'}">
                             <el-input v-model="form.host" placeholder="请输入IP"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入用户名">
+                        <el-form-item label="请输入用户名"
+                                      prop="user"
+                                      :rules="{required: true, message: '用户名不能为空', trigger: 'blur'}">
                             <el-input v-model="form.user" placeholder="请输入用户名"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入密码">
+                        <el-form-item label="请输入密码"
+                                      prop="password"
+                                      :rules="{required: true, message: '密码不能为空', trigger: 'blur'}">
                             <el-input v-model="form.password" placeholder="请输入密码"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入端口">
+                        <el-form-item label="请输入端口"
+                                      prop="port"
+                                      :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
                             <el-input v-model="form.port" placeholder="请输入端口"></el-input>
                         </el-form-item>
                     </el-col>
@@ -153,19 +166,24 @@
         methods: {
             // 登录ftp
             async sendConnect() {
-                this.loading = true;
-                await this.$get('startFtp', this.form)
-                    .then(res => {
-                        this.loading = false;
-                        if (res.code === '0000000') {
-                            this.folderData = res.data;
-                            this.currentPath = res.currentPath;
-                            // 登录火眼界面
-                            this.dialogVisible = true;
-                        } else {
-                            this.$message.error(res.msg + '请检查登录项是否填写正确！')
-                        }
-                    })
+                this.$refs.form.validate(async (valid) => {
+                    debugger
+                    if (valid) {
+                        this.loading = true;
+                        await this.$get('startFtp', this.form)
+                            .then(res => {
+                                this.loading = false;
+                                if (res.code === '0000000') {
+                                    this.folderData = res.data;
+                                    this.currentPath = res.currentPath;
+                                    // 登录火眼界面
+                                    this.dialogVisible = true;
+                                } else {
+                                    this.$message.error(res.msg + '请检查登录项是否填写正确！')
+                                }
+                            })
+                    }
+                });
             },
             // 登录火眼
             async loginToCloudWalk(alreadyMD5 = false) {
