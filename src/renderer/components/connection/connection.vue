@@ -186,7 +186,6 @@
             },
             // 登录火眼
             async loginToCloudWalk(alreadyMD5 = false) {
-                debugger
                 this.$refs.platform.validate(async (valid) => {
                     if (valid) {
                         let host = this.platform.face_host.split(':')[0];
