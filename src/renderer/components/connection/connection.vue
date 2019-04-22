@@ -27,7 +27,7 @@
             <el-form v-show="!isLogin"
                      ref="form"
                      :model="form"
-                     :rules="[]"
+                     :rules="{}"
                      label-position="top"
                      label-width="80px">
                 <el-row :gutter="20">
@@ -83,7 +83,7 @@
                    :show-close="false">
             <el-form ref="platform"
                      :model="platform"
-                     :rules="[]">
+                     :rules="{}">
                 <el-row :gutter="20">
                     <el-col :span="8">
                         <el-form-item label="火眼地址"
@@ -188,9 +188,9 @@
             async loginToCloudWalk(alreadyMD5 = false) {
                 this.$refs.platform.validate(async (valid) => {
                     if (valid) {
-                        let host = this.platform.face_host.split(':')[0];
+                        this.platform.face_host = this.platform.face_host.split(':')[0];
                         this.faceLoading = true;
-                        await this.$_post(`http://${host}:10002/facebigdata/auth/login`, {
+                        await this.$_post(`http://${this.platform.face_host}:10002/facebigdata/auth/login`, {
                             password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
                             username: "admin"
                         })
