@@ -249,7 +249,10 @@
                     })
             },
             async autoChangePathFull (pathFull) {
-                this.loadingAnimate = this.$loading({lock: true});
+                this.loadingAnimate = this.$loading({
+                    lock: true,
+                    text: '正在跳转到指定目录，请稍等'
+                });
                 await this.$get('changeDirectoryFull', {fullPath: pathFull})
                     .then(res => {
                         this.loading = false;

@@ -48,7 +48,6 @@
                             multiple>
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                        <div class="el-upload__tip" slot="tip">只能上传avi/mp4文件，且不超过500M</div>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="选择单位：" prop="value">
