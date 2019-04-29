@@ -63,6 +63,7 @@
                 <el-row class="tr">
                     <el-form-item>
                         <el-button type="primary" plain @click="sendConnect">连接</el-button>
+                        <!--<el-button type="primary" plain @click="updateProgram">updateProgram</el-button>-->
                     </el-form-item>
                 </el-row>
             </el-form>
@@ -159,30 +160,34 @@
             folder
         },
         mounted() {
-            this.updateProgram();
-            this.updateConfirm();
+            // this.updateProgram();
+            // this.updateConfirm();
             this.getUserInfo();
         },
         methods: {
             // 登录ftp
             async sendConnect() {
-                this.$refs.form.validate(async (valid) => {
-                    if (valid) {
-                        this.loading = true;
-                        await this.$get('startFtp', this.form)
-                            .then(res => {
-                                this.loading = false;
-                                if (res.code === '0000000') {
-                                    this.folderData = res.data;
-                                    this.currentPath = res.currentPath;
-                                    // 登录火眼界面
-                                    this.dialogVisible = true;
-                                } else {
-                                    this.$message.error(res.msg + '请检查登录项是否填写正确！')
-                                }
-                            })
-                    }
-                });
+                return new Promise((resolve, reject) => {
+                    this.$refs.form.validate(async (valid) => {
+                        if (valid) {
+                            this.loading = true;
+                            await this.$get('startFtp', this.form)
+                              .then(res => {
+                                  this.loading = false;
+                                  if (res.code === '0000000') {
+                                      this.folderData = res.data;
+                                      this.currentPath = res.currentPath;
+                                      // 登录火眼界面
+                                      this.dialogVisible = true;
+                                      resolve('ok')
+                                  } else {
+                                      this.$message.error(res.msg + '请检查登录项是否填写正确！')
+                                      resolve('err')
+                                  }
+                              })
+                        }
+                    });
+                })
             },
             // 登录火眼
             async loginToCloudWalk(alreadyMD5 = false) {

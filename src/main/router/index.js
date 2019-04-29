@@ -37,7 +37,7 @@ app.get('/startFtp', async function(req, res) {
     // 登录
     let connectData = await startFtp(req.query);
     let resData = {};
-
+    console.log(connectData)
     if (connectData === ERROR_CODE) {
         resData = Object.assign({}, dataEr, {msg: '登录失败！'});
     } else {

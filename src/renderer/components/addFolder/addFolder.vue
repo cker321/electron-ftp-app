@@ -16,8 +16,8 @@
             <el-input placeholder="请输入文件夹名称" v-model="defaultForm.newFolder"></el-input>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="handleClose">取 消</el-button>
-            <el-button type="primary" @click="handleOk">确 定</el-button>
+            <el-button @click="handleClose" :disabled="loading">取 消</el-button>
+            <el-button type="primary" @click="handleOk" :disabled="loading">确 定</el-button>
         </span>
     </el-dialog>
 </template>
@@ -31,7 +31,8 @@
                 dialogVisible: false,
                 defaultForm: {
                     newFolder: ''
-                }
+                },
+                loading: false
             }
         },
         methods: {
@@ -55,8 +56,10 @@
                     this.$notify.error({message: '文件夹名称，请勿输入中文字符串！'});
                      return;
                 }
+                this.loading = true;
                 this.$get('newFolder', {newFolder: this.defaultForm.newFolder})
                     .then(res => {
+                        this.loading = false;
                         if (res.code === '0000000') {
                             this.hideDialog();
                             this.$notify({

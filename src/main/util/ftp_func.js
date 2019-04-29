@@ -53,10 +53,12 @@ let startFtp = async function (obj, cb) {
         talk.on('ready', function() {
             // let fileDir = await getFileDirectory(cb);
             // return 'ok'
+            console.log('oooooooooooooooooook')
             resolve('ok');
         });
         // 连接错误
         talk.on('error', function (err) {
+            console.log('errerrerrerrerrerrerrerrerr')
             reject(ERROR_CODE);
         })
         // 会话保持时间
@@ -71,6 +73,7 @@ let startFtp = async function (obj, cb) {
 let getFileDirectory = async function () {
     let list = await new Promise((resolve, reject) => {
         talk.list(function (err, list) {
+            console.log(list)
             if (err) reject(err);
             resolve(list);
         })
@@ -82,6 +85,7 @@ let getFileDirectory = async function () {
 let getCurrentPath = async function (cb) {
     let currentPath = await new Promise((resolve, reject) => {
         talk.pwd(function (err, dir) {
+            console.log(dir)
             if (err) reject(err);
             resolve(dir);
         })
