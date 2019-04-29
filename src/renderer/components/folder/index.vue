@@ -95,7 +95,8 @@
                 tableData: [],
                 newCurrentPath: '',
                 dialogVisible: false,
-                loading: false
+                loading: false,
+                loadingAnimate: false
             }
         },
         computed: {
@@ -138,8 +139,7 @@
             currentPath(val) {
                 this.newCurrentPath = val;
                 this.splitPath();
-            },
-            host(val) {console.log(val)}
+            }
         },
         methods: {
             logOut() {
@@ -249,6 +249,7 @@
                     })
             },
             async autoChangePathFull (pathFull) {
+                this.loadingAnimate = this.$loading({lock: true});
                 await this.$get('changeDirectoryFull', {fullPath: pathFull})
                     .then(res => {
                         this.loading = false;
@@ -259,6 +260,7 @@
                     .catch(() => {
                         this.loading = false;
                     })
+                this.loadingAnimate.close();
             },
             handleUploadSuccess() {
                 this.changePathFull(this.newCurrentPath.length - 1)
