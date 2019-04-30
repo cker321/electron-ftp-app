@@ -32,28 +32,28 @@
                      label-width="80px">
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <el-form-item label="请输入IP"
+                        <el-form-item label="FTP地址"
                                       prop="host"
                                       :rules="{required: true, message: 'IP不能为空', trigger: 'blur'}">
                             <el-input v-model="form.host" placeholder="请输入IP"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入用户名"
+                        <el-form-item label="用户名"
                                       prop="user"
                                       :rules="{required: true, message: '用户名不能为空', trigger: 'blur'}">
                             <el-input v-model="form.user" placeholder="请输入用户名"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入密码"
+                        <el-form-item label="密码"
                                       prop="password"
                                       :rules="{required: true, message: '密码不能为空', trigger: 'blur'}">
-                            <el-input v-model="form.password" placeholder="请输入密码"></el-input>
+                            <el-input v-model="form.password" placeholder="请输入密码" type="password"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="请输入端口"
+                        <el-form-item label="端口"
                                       prop="port"
                                       :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
                             <el-input v-model="form.port" placeholder="请输入端口"></el-input>
