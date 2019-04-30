@@ -42,7 +42,6 @@
                     <el-upload
                             class="upload-demo"
                             drag
-                            action="http://localhost:3009/fileUpload"
                             :before-upload="handleBeforeUpload"
                             :file-list="fileList"
                             multiple>
@@ -121,7 +120,6 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
-                // console.log(file)
                 this.fileObj = file;
                 this.fileList.push(file)
                 return false;

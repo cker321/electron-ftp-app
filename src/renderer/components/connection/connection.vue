@@ -77,7 +77,7 @@
         </div>
         <!--登录到火眼-->
         <el-dialog center
-                   title="登录火眼"
+                   title="登录跨镜追踪"
                    width="70%"
                    :visible.sync="dialogVisible"
                    :modal-append-to-body="false"
@@ -87,10 +87,10 @@
                      :rules="{}">
                 <el-row :gutter="20">
                     <el-col :span="8">
-                        <el-form-item label="火眼地址"
+                        <el-form-item label="跨镜追踪地址"
                                       prop="face_host"
                                       :rules="{required: true, message: '地址不能为空', trigger: 'blur'}">
-                            <el-input v-model="platform.face_host" placeholder="请输入火眼地址"></el-input>
+                            <el-input v-model="platform.face_host" placeholder="请输入跨镜追踪地址"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
@@ -211,7 +211,7 @@
                             })
                             .catch(err => {
                                 this.faceLoading = false;
-                                this.$message.error('登录火眼失败，' + err.message);
+                                this.$message.error('登录跨镜追踪失败，' + err.message);
                             })
                     }
                 })
