@@ -127,16 +127,16 @@
         data() {
             return {
                 form: {
-                    host: '',
-                    user: '',
-                    password: '',
-                    port: '',
+                    host: '10.128.129.228',
+                    user: 'jfedu1',
+                    password: '123456',
+                    port: '21',
                     parser: 'utf-8'
                 },
                 platform: {
-                    face_host: '',
-                    face_user: '',
-                    face_password: ''
+                    face_host: '10.128.129.228',
+                    face_user: 'admin',
+                    face_password: 'cloudwalk_eye'
                 },
                 folderData: [],
                 currentPath: '',
