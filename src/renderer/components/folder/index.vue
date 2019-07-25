@@ -72,6 +72,7 @@
         <addFile ref="addFile"
                  :host="host"
                  :isLogin="isLogin"
+                 :currentPath="newCurrentPath.join('/')"
                  dialogVisible="dialogVisible"
                  @uploadSuccess="handleUploadSuccess"></addFile>
         <addFolder ref="addFolder"

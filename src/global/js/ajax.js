@@ -45,13 +45,13 @@ export const post = function (api, params, load) {
   let PromiseHttp = new Promise(function (resolve, reject) {
     // axios.defaults.headers['X-Authorization'] && delete axios.defaults.headers['X-Authorization'];
     // axios.default.withCredentials = true;
-    axios.default.timeout = 500000;
+    axios.default.timeout = 0;
     if (api.indexOf('fileUpload') > -1) {
       axios.defaults.headers['Content-Type']  = undefined
     } else {
       axios.defaults.headers['Content-Type']  = 'application/json;charset=UTF-8'
     }
-    axios.post(`${prefix}/${api}`, params).then(function (res) {
+    axios.post(`${prefix}/${api}`, params, {timeout: 0}).then(function (res) {
       if (isLoad) loading.end()
       if (res.data.code !== '0000000') {
         reject(res.data);

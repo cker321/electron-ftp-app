@@ -17,17 +17,18 @@ import {
     clearCache
 } from '../util/ftp_func'
 
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 // const progressStream = require('progress-stream');
 const bodyparser = require('body-parser');
-
 let GloabalCurrentPath = '';
 // let uploadFiles = []; // 上传的文件名
 
-const ERROR_CODE = '0000001'
-const dataOk = {code: '0000000', msg: '请求处理成功'};
+const ERROR_CODE = '0000001';
 const dataEr = {code: ERROR_CODE, msg: ''};
+const dataOk = {code: '0000000', msg: '请求处理成功'};
+
+
 
 
 app.use(bodyparser.urlencoded({extende:true}));
@@ -108,9 +109,10 @@ app.get('/changeDirectoryFull', async function (req, res) {
 
 app.post('/fileInfoUploads', function (req, res, next) {
     let resData = Object.assign({}, dataOk);
-    ftpUploads (req.body.filePath, res,function (percentage) {
+    ftpUploads (req.body.filePath,function (total, percentage) {
+        console.log(percentage)
         // let progress = progressStream({length: '0'});
-        // req.pipe(percentage);
+        // req.pipe(1);
         // progress.headers = req.headers;
         //
         // // 获取上传文件的真实长度（针对 multipart)

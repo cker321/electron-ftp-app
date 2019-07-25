@@ -1,5 +1,5 @@
 /**
- * 定义前端使用的接口
+ * 定义ftp方法的接口
  * @author zhuRui
  */
 const fs = require('fs');
@@ -109,7 +109,7 @@ function ftpUpload(fileNameArr, cb) {
 
 // 无http直接上传
 // 上传文件
-function ftpUploads(filePaths, res, cb, cbEnd) {
+function ftpUploads(filePaths, cb, cbEnd) {
     let fileTemp = [];
     filePaths.forEach(function (fileObj, index) {
         let fileName = fileObj.name;
@@ -117,9 +117,7 @@ function ftpUploads(filePaths, res, cb, cbEnd) {
         let readFile = fs.createReadStream(filePath),
         cur = 0,
         total = fs.statSync(filePath).size;
-        // res.writeHeader(200, {"Content-Length": total});
         readFile.on('data', function(d) {
-            // console.log(`接收到 ${cur} 字节的数据`);
             cur += d.length;
             // 返回实时进度
             cb && cb(total, ((cur / total) * 100).toFixed(1))

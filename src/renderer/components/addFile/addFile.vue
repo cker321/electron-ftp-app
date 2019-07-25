@@ -21,6 +21,14 @@
     .el-upload-dragger .el-upload__text{
         line-height: 1;
     }
+    .loadingModal{
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+    }
 </style>
 
 <template>
@@ -28,7 +36,7 @@
                width="50%"
                :modal-append-to-body="false"
                v-loading="loading"
-               element-loading-text="正在上传，请稍等"
+               :element-loading-text="loadingText"
                element-loading-background="rgba(0, 0, 0, 0.8)"
                :modal-close="false"
                :close-on-click-modal="false"
@@ -37,14 +45,13 @@
             <i class="el-icon-upload"></i>上传文件
         </div>
         <div class="body">
-            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80" action>
+            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80">
                 <el-form-item label="上传文件：">
                     <el-upload
                             class="upload-demo"
                             drag
                             :before-upload="handleBeforeUpload"
-                            :file-list="fileList"
-                            multiple>
+                            :file-list="fileList">
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                     </el-upload>
@@ -64,7 +71,7 @@
 <script>
     import Treeselect from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-
+    const obj = {type: 6, cmd: 1};
     export default {
         name: 'addFile',
         components: {
@@ -78,10 +85,15 @@
             isLogin: {
                 type: Boolean,
                 default: false
+            },
+            currentPath: {
+                type: String,
+                default: ''
             }
         },
         data() {
             return {
+                websocket: null,
                 dialogVisible: false,
                 fileObj: null,
                 defaultForm: {},
@@ -94,7 +106,8 @@
                         { required: true, message: '选择单位', trigger: 'blur' }
                     ],
                 },
-                currentPath: ''
+                loadingText: '正在上传，请稍等，已上传：0%',
+                loadingPercentage: 0
             }
         },
         watch: {
@@ -121,7 +134,7 @@
             },
             handleBeforeUpload(file, key, fileList) {
                 this.fileObj = file;
-                this.fileList.push(file)
+                this.fileList = [file];
                 return false;
             },
             handleOk() {
@@ -147,29 +160,45 @@
                     })
                 })
 
+                this.loadingText = '正在上传，请稍等，已上传：0%';
+
                 this.loading = true;
-                this.$post('fileInfoUploads', {filePath})
-                    .then(res => {
+
+                this.websocket = new WebSocket('ws://localhost:1300');
+
+                this.websocket.onopen = (evt) => {
+                    if (evt.type === 'open') {
+                        // 延迟发送
+                        setTimeout(() => {
+                            this.websocket.send(JSON.stringify({
+                                path: filePath
+                            }));
+                        }, 500);
+                    }
+                };
+
+                this.websocket.onmessage = (evt) => {
+                    let data = JSON.parse(evt.data)
+                    if (data.type === 'success') {
                         this.hideDialog();
-                        this.fileList = [];
-                        // this.$message.success('上传成功！');
+                        this.loading = false;
                         this.$notify({
                             message: '上传成功！',
                             type: 'success',
                             offset: 50
                         });
-                        this.currentPath = res.currentPath;
-                        res.fileNames.forEach(item => {
+                        debugger
+                        data.fileName.forEach(item => {
                             this.videoAdd(item);
                         })
-                    })
-                    .catch(err => {
-                        this.$notify.error({
-                            message: err.message,
-                            offset: 50
-                        });
-                        this.loading = false;
-                    })
+                        this.websocket.close();
+                    } else {
+                        this.loadingPercentage = parseInt(data.data);
+                        this.loadingText = `正在上传，请稍等，已上传：${data.data}%`
+                    }
+                };
+
+                return;
             },
             // 调用火眼接口
             videoAdd(fileName) {
@@ -233,3 +262,6 @@
         }
     }
 </script>
+<style lang="less">
+
+</style>

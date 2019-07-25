@@ -282,7 +282,7 @@
                 this.platform.face_user = searchParams.get('faceUser')
                 this.platform.face_password = searchParams.get('facePassword');
                 // 跳转目录
-                this.changePathFull = searchParams.get('changePathFull');
+                // this.changePathFull = searchParams.get('changePathFull');
             }
         }
     }
