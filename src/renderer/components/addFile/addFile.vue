@@ -187,7 +187,6 @@
                             type: 'success',
                             offset: 50
                         });
-                        debugger
                         data.fileName.forEach(item => {
                             this.videoAdd(item);
                         })
@@ -198,7 +197,6 @@
                     }
                 };
 
-                return;
             },
             // 调用火眼接口
             videoAdd(fileName) {
