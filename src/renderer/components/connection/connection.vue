@@ -70,6 +70,7 @@
             <folder v-show="isLogin"
                     ref="folder"
                     :host="host"
+                    :port="port"
                     :isLogin="isLogin"
                     :defaultData="folderData"
                     :currentPath="currentPath"
@@ -86,21 +87,28 @@
                      :model="platform"
                      :rules="{}">
                 <el-row :gutter="20">
-                    <el-col :span="8">
+                    <el-col :span="6">
                         <el-form-item label="跨镜追踪地址"
                                       prop="face_host"
                                       :rules="{required: true, message: '地址不能为空', trigger: 'blur'}">
                             <el-input v-model="platform.face_host" placeholder="请输入跨镜追踪地址"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
+                        <el-form-item label="跨镜追踪端口"
+                                      prop="face_port"
+                                      :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
+                            <el-input v-model="platform.face_port" placeholder="请输入跨镜追踪端口，非页面访问端口"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="6">
                         <el-form-item label="请输入用户名"
                                       prop="face_user"
                                       :rules="{required: true, message: '用户名不能为空', trigger: 'blur'}">
                             <el-input v-model="platform.face_user" placeholder="请输入用户名"></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
                         <el-form-item label="请输入密码"
                                       prop="face_password"
                                       :rules="{required: true, message: '密码不能为空', trigger: 'blur'}">
@@ -128,13 +136,14 @@
             return {
                 form: {
                     host: '10.128.129.228',
-                    user: 'jfedu1',
-                    password: '123456',
+                    user: 'root',
+                    password: 'cloudwalk@123!',
                     port: '21',
                     parser: 'utf-8'
                 },
                 platform: {
                     face_host: '10.128.129.228',
+                    face_port: '10002',
                     face_user: 'admin',
                     face_password: 'cloudwalk_eye'
                 },
@@ -151,6 +160,7 @@
                 faceLoading: false,
 
                 host: '',
+                port: '',
 
                 // 自动跳转目录全路径
                 changePathFull: '/dev/shm'
@@ -195,13 +205,14 @@
                     if (valid) {
                         this.platform.face_host = this.platform.face_host.split(':')[0];
                         this.faceLoading = true;
-                        await this.$_post(`http://${this.platform.face_host}:11002/facebigdata/auth/login`, {
+                        await this.$_post(`http://${this.platform.face_host}:${this.platform.face_port}/facebigdata/auth/login`, {
                             password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
                             username: "admin"
                         })
                             .then(res => {
                                 this.faceLoading = false;
                                 this.host = this.platform.face_host;
+                                this.port = this.platform.face_port;
                                 sessionStorage.setItem('cloudwalk-token', res.data.token);
                                 this.isLogin = true;
                                 this.dialogVisible = false;

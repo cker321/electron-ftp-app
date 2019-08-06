@@ -82,6 +82,10 @@
                 type: String,
                 default: ''
             },
+            port: {
+                type: String,
+                default: ''
+            },
             isLogin: {
                 type: Boolean,
                 default: false

@@ -71,6 +71,7 @@
         </el-table>
         <addFile ref="addFile"
                  :host="host"
+                 :port="port"
                  :isLogin="isLogin"
                  :currentPath="newCurrentPath.join('/')"
                  dialogVisible="dialogVisible"
@@ -125,6 +126,10 @@
                 default: ''
             },
             host: {
+                type: String,
+                default: 'localhost'
+            },
+            port: {
                 type: String,
                 default: 'localhost'
             },
