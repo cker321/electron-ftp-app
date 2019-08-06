@@ -206,11 +206,12 @@
                     userId: '1000',
                     remark: 'ftp工具上传',
                     path: `${this.currentPath}/${fileName}`,
+                    engineTypes: [3]
                 }
                 Object.keys(params).map(key => {
                     formData.append(key, params[key]);
                 });
-                this.$_post(`http://${this.host}:10002/facebigdata/device/video/add`, formData)
+                this.$_post(`http://${this.host}:11002/facebigdata/device/video/add`, formData)
                     .then(res => {
                         // this.$message.success(res.message)
                         this.$notify({
@@ -231,7 +232,7 @@
             },
             // 获取单位
             getOrgList() {
-                this.$_post(`http://${this.host}:10002/facebigdata/org/list`, {})
+                this.$_post(`http://${this.host}:11002/facebigdata/org/list`, {})
                     .then(res => {
                         this.initTree(res.data);
                     })

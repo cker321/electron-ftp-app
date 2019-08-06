@@ -195,7 +195,7 @@
                     if (valid) {
                         this.platform.face_host = this.platform.face_host.split(':')[0];
                         this.faceLoading = true;
-                        await this.$_post(`http://${this.platform.face_host}:10002/facebigdata/auth/login`, {
+                        await this.$_post(`http://${this.platform.face_host}:11002/facebigdata/auth/login`, {
                             password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
                             username: "admin"
                         })
@@ -271,6 +271,7 @@
             },
             // 转换
             convertParams (params) {
+                console.log(params);
                 let searchParams = new URLSearchParams(params);
                 // ftp登录参数
                 this.form.host = searchParams.get('host');
