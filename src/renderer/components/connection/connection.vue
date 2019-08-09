@@ -135,14 +135,14 @@
         data() {
             return {
                 form: {
-                    host: '10.128.129.228',
+                    host: '10.128.129.155',
                     user: 'root',
-                    password: 'cloudwalk@123!',
+                    password: 'Cloudwalk@123!',
                     port: '21',
                     parser: 'utf-8'
                 },
                 platform: {
-                    face_host: '10.128.129.228',
+                    face_host: '10.128.129.155',
                     face_port: '10002',
                     face_user: 'admin',
                     face_password: 'cloudwalk_eye'
