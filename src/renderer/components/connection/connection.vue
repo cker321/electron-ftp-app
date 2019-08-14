@@ -88,14 +88,14 @@
                      :rules="{}">
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <el-form-item label="跨镜追踪地址"
+                        <el-form-item label="平台地址"
                                       prop="face_host"
                                       :rules="{required: true, message: '地址不能为空', trigger: 'blur'}">
                             <el-input v-model="platform.face_host" placeholder="请输入跨镜追踪地址"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="跨镜追踪端口"
+                        <el-form-item label="平台端口"
                                       prop="face_port"
                                       :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
                             <el-input v-model="platform.face_port" placeholder="请输入跨镜追踪端口，非页面访问端口"></el-input>
@@ -207,7 +207,7 @@
                         this.faceLoading = true;
                         await this.$_post(`http://${this.platform.face_host}:${this.platform.face_port}/facebigdata/auth/login`, {
                             password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
-                            username: "admin"
+                            username: this.platform.face_user
                         })
                             .then(res => {
                                 this.faceLoading = false;
@@ -291,6 +291,7 @@
                 this.form.port = searchParams.get('port');
                 // 火眼登录参数
                 this.platform.face_host = searchParams.get('faceHost')
+                this.platform.face_port = searchParams.get('facePort')
                 this.platform.face_user = searchParams.get('faceUser')
                 this.platform.face_password = searchParams.get('facePassword');
                 // 跳转目录
