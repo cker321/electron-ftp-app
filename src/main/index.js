@@ -31,7 +31,7 @@ function createWindow () {
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  mainWindow.openDevTools();
+  // mainWindow.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -169,7 +169,6 @@ app.on('second-instance', (event, argv) => {
   //   console.log('Saved.');
   // });
   if (process.platform === 'win32') {
-    // Windows
     // handleArgv(argv);
     mainWindow.focus()
   }

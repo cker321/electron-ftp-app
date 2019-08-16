@@ -1,6 +1,6 @@
 {
   "name": "ReID-VideoUploader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "description": "An electron-vue ftp upload file project",
   "license": null,

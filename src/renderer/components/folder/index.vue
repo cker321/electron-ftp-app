@@ -54,7 +54,7 @@
                     width="200"
                     label="修改日期">
                 <template slot-scope="props">
-                    {{(new Date(props.row.date.toString())).toLocaleString()}}
+                    {{new Date((new Date(props.row.date)).getTime() + 8 * 3600 * 1000).toLocaleString()}}
                 </template>
             </el-table-column>
             <el-table-column
