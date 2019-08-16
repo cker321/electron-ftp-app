@@ -31,7 +31,7 @@ function createWindow () {
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  //  mainWindow.openDevTools();
+  mainWindow.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -160,10 +160,18 @@ let infoEvent = '';
 
 handleArgv(process.argv);
 
+// 第二个实例 focus到窗口
 app.on('second-instance', (event, argv) => {
+  // fs.writeFile('C:/Users/yckj1041/AppData/Local/Programs/url.txt', JSON.stringify(argv), function(err) {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //   console.log('Saved.');
+  // });
   if (process.platform === 'win32') {
     // Windows
-    handleArgv(argv);
+    // handleArgv(argv);
+    mainWindow.focus()
   }
 });
 
@@ -211,3 +219,4 @@ function sendUserInfo(message, data) {
 ipcMain.on('userInfoGet', (e, arg) => {
   sendUserInfo(infoEvent, queryParam)
 });
+
