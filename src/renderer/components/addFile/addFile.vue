@@ -47,7 +47,8 @@
         <div class="body">
             <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80">
                 <el-form-item label="上传文件：">
-                    <el-upload
+                    <el-col :span="20">
+                        <el-upload
                             class="upload-demo"
                             drag
                             :before-upload="handleBeforeUpload"
@@ -55,6 +56,7 @@
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                     </el-upload>
+                    </el-col>
                 </el-form-item>
                 <el-form-item label="选择单位：" prop="value">
                     <treeselect v-model="value" :options="options"/>
@@ -71,7 +73,8 @@
 <script>
     import Treeselect from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-    const obj = {type: 6, cmd: 1};
+    // 允许提交的文件格式
+    const FILE_TYPE = ['MP4','AVI','MOV','WMV','3GP','MKV','FLV','F4V', 'RMVB','MPEG','MPG','DAT'];
     export default {
         name: 'addFile',
         components: {
@@ -93,6 +96,12 @@
             currentPath: {
                 type: String,
                 default: ''
+            },
+            tableData: {
+                type: Array,
+                default () {
+                    return []
+                }
             }
         },
         data() {
@@ -137,11 +146,18 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
-                this.fileObj = file;
-                this.fileList = [file];
+                let fileName = file.name;
+                let fileType = (fileName.split('.')[fileName.split('.').length - 1]).toUpperCase();
+                if (FILE_TYPE.includes(fileType)) {
+                    this.fileObj = file;
+                    this.fileList = [file];
+                } else {
+                    this.$message.error('文件格式错误！')
+                }
                 return false;
             },
             handleOk() {
+                console.log(this.fileObj)
                 if (!this.fileObj) {
                     this.$notify.error({
                         message: '请选取视频文件',
@@ -163,10 +179,20 @@
                         name: item.name
                     })
                 })
-
-                this.loadingText = '正在上传，请稍等，已上传：0%';
-
                 this.loading = true;
+                // 判断重名直接提交到
+                if (this.isSameFile(this.fileObj.name, this.fileObj.size)) {
+                    this.$notify({
+                        message: '上传成功！',
+                        type: 'success',
+                        offset: 50
+                    });
+                    this.videoAdd(this.fileObj.name);
+                    this.hideDialog();
+                    this.loading = false;
+                    return;
+                }
+                this.loadingText = '正在上传，请稍等，已上传：0%';
 
                 this.websocket = new WebSocket('ws://localhost:1300');
 
@@ -201,6 +227,12 @@
                     }
                 };
 
+            },
+            // 判断是否为相同文件
+            isSameFile (filename, fileSize) {
+                return this.tableData.findIndex(item => {
+                    return item.name === filename && item.size === fileSize
+                }) !== -1;
             },
             // 调用火眼接口
             videoAdd(fileName) {

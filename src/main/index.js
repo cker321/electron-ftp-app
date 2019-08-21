@@ -24,14 +24,16 @@ function createWindow () {
     height: 663,
     useContentSize: true,
     width: 1400,
-    frame: false
+    frame: false,
+    transparent: true
     // webPreferences: {webSecurity: false}
   })
 
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  // mainWindow.openDevTools();
+  process.env.NODE_ENV === 'development' && mainWindow.openDevTools()
+
 
   mainWindow.on('closed', () => {
     mainWindow = null

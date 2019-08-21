@@ -58,7 +58,6 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="date"
                     width="200"
                     label="操作">
                 <template slot-scope="props">
@@ -74,6 +73,7 @@
                  :port="port"
                  :isLogin="isLogin"
                  :currentPath="newCurrentPath.join('/')"
+                 :tableData="tableData"
                  dialogVisible="dialogVisible"
                  @uploadSuccess="handleUploadSuccess"></addFile>
         <addFolder ref="addFolder"
