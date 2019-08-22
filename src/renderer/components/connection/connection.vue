@@ -1,6 +1,6 @@
 <template>
     <div class="connection" id="connection">
-        <div class="title-bar">批量上传工具
+        <div class="title-bar">离线视频上传工具
             <div class="window-button">
                 <span @click="minimize">
                     <i class="el-icon-minus"></i>
@@ -312,7 +312,7 @@
         right: 0;
         bottom: 0;
         background-color: #FFF;
-
+        border: 1px solid #ccc;
         .logo {
             font-size: 40px;
             padding: 10px 0 10px;

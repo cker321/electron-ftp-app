@@ -1,14 +1,17 @@
 <style lang="less">
     .vue-treeselect {
-        width: 550px;
-        float: left;
         margin-left: 10px;
     }
 
     .el-upload-dragger {
-        width: 550px;
+        width: 100%
     }
-
+    .upload-demo{
+        padding-left: 10px;
+    }
+    .el-upload{
+        width: 100%;
+    }
     .el-upload__tip {
         margin-top: -15px;
     }
@@ -47,16 +50,15 @@
         <div class="body">
             <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80">
                 <el-form-item label="上传文件：">
-                    <el-col :span="20">
-                        <el-upload
-                            class="upload-demo"
-                            drag
-                            :before-upload="handleBeforeUpload"
-                            :file-list="fileList">
-                        <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    <el-upload
+                        class="upload-demo"
+                        drag
+                        action="''"
+                        :before-upload="handleBeforeUpload"
+                        :file-list="fileList">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                     </el-upload>
-                    </el-col>
                 </el-form-item>
                 <el-form-item label="选择单位：" prop="value">
                     <treeselect v-model="value" :options="options"/>
@@ -119,7 +121,7 @@
                         { required: true, message: '选择单位', trigger: 'blur' }
                     ],
                 },
-                loadingText: '正在上传，请稍等，已上传：0%',
+                loadingText: '正在上传，请稍等，已上传：0%，速度：0M/S',
                 loadingPercentage: 0
             }
         },
@@ -192,7 +194,7 @@
                     this.loading = false;
                     return;
                 }
-                this.loadingText = '正在上传，请稍等，已上传：0%';
+                this.loadingText = '正在上传，请稍等，已上传：0%，速度：0M/S';
 
                 this.websocket = new WebSocket('ws://localhost:1300');
 
@@ -223,7 +225,7 @@
                         this.websocket.close();
                     } else {
                         this.loadingPercentage = parseInt(data.data);
-                        this.loadingText = `正在上传，请稍等，已上传：${data.data}%`
+                        this.loadingText = `正在上传，请稍等，已上传：${data.data}%，速度：${data.speed}M/S`
                     }
                 };
 

@@ -25,7 +25,7 @@
                 :data="tableData"
                 stripe
                 max-height="500"
-                style="width: 100%">
+                :style="{width: '100%', height: tableHeight}">
             <el-table-column prop="name" label="文件夹 / 名">
                 <template slot-scope="props">
                     <el-button style="width: 100%; text-align: left"
@@ -98,7 +98,8 @@
                 newCurrentPath: '',
                 dialogVisible: false,
                 loading: false,
-                loadingAnimate: false
+                loadingAnimate: false,
+                windowHeight: window.outerHeight
             }
         },
         computed: {
@@ -112,6 +113,9 @@
                     size = (size >= (1000 * 1024) ? (size/1024/1024).toFixed(2) + 'GB' : size >= 500 ? (size / 1024).toFixed(2) + 'MB' : size.toFixed(2) + 'KB');
                     return size
                 }
+            },
+            tableHeight () {
+                return this.windowHeight - 150 + 'px'
             }
         },
         props: {
@@ -274,6 +278,12 @@
             handleUploadSuccess() {
                 this.changePathFull(this.newCurrentPath.length - 1)
             }
+        },
+        mounted () {
+            window.addEventListener('resize', () => {
+                this.windowHeight = window.outerHeight
+                // console.log(window.outerHeight)
+            })
         }
     }
 </script>

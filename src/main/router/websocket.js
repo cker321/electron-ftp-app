@@ -1,5 +1,5 @@
 let websocket = {};
-let resTemplate = {type: 'uploading', data: 0, fileName: ''}
+let resTemplate = {type: 'uploading', data: 0, fileName: '', speed: 0}
 const ws = require('nodejs-websocket');
 import {
     ftpUploads
@@ -8,21 +8,20 @@ import {
 websocket.createServer = () => {
     let server = ws.createServer(connection => {
         connection.on('text', function(result) {
-            console.log('发送消息', result)
             if (result.path) {
                 console.log(result.path);
             } else {
                 let newResult = JSON.parse(result);
-                console.log(newResult.path);
-                ftpUploads(newResult.path, function (total, percentage) {
+                ftpUploads(newResult.path, function (total, percentage, speed) {
                     resTemplate.type = 'uploading';
                     resTemplate.data = percentage;
+                    resTemplate.speed = speed;
                     connection.sendText(JSON.stringify(resTemplate))
                 }, function (fileName) {
-                    console.log(fileName);
                     resTemplate.type = 'success';
                     resTemplate.data = 100;
                     resTemplate.fileName = fileName;
+                    resTemplate.speed = 0;
                     connection.sendText(JSON.stringify(resTemplate))
                 });
             }

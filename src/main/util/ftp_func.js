@@ -111,17 +111,26 @@ function ftpUpload(fileNameArr, cb) {
 // 上传文件
 function ftpUploads(filePaths, cb, cbEnd) {
     let fileTemp = [];
+    let timeStamp = new Date().getTime();
+    let lastByte = 0;
+    let speed = 0;
     filePaths.forEach(function (fileObj, index) {
         let fileName = fileObj.name;
         let filePath = fileObj.path.replace(/\//g, '/');
         let readFile = fs.createReadStream(filePath),
         cur = 0,
         total = fs.statSync(filePath).size;
-        readFile.on('data', function(d) {
-            cur += d.length;
-            // 返回实时进度
-            cb && cb(total, ((cur / total) * 100).toFixed(1))
-            // console.log(((cur / total) * 100).toFixed(1) + '% complete');
+        readFile.on('data', function(chunk) {
+            // m/s
+            cur += chunk.length;
+            let timeBetween  = new Date().getTime() - timeStamp;
+            if (timeBetween / 1000 > 1) {
+                speed = ((cur - lastByte) / 1024 / 1024) / (timeBetween / 1000);
+                lastByte = cur;
+                timeStamp = new Date().getTime();
+            }
+            // 返回实时进度 速度
+            cb && cb(total, ((cur / total) * 100).toFixed(1), speed > 1000 ? '1000' : speed.toFixed(2))
         });
         talk.put(readFile, fileName, function(err) {
             if (err) throw err;
