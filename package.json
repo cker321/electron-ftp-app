@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "ReID-VideoUploader",
+    "productName": "离线视频上传工具",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"
