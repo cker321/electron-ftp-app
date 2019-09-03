@@ -4,7 +4,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import ajax from '../global/js/ajax'
 import router from './router'
-
+// import './assets/theme/index.css'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);

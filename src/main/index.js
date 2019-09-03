@@ -1,4 +1,4 @@
-import { app, BrowserWindow,ipcMain } from 'electron'
+import electron, { app, BrowserWindow,ipcMain } from 'electron'
 const fs = require('fs'); // 引入fs模块
 const path = require('path');
 // import { autoUpdater } from 'electron-updater'
@@ -11,24 +11,38 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow,webContents;
+let mainWindow, webContents;
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
+const icoUrl = process.env.NODE_ENV === 'development'
+  ? '../../static/logo.ico'
+  : `/static/logo.ico`;
+
+
+const Menu = electron.Menu
 function createWindow () {
   /**
    * Initial window options
    */
+
+  Menu.setApplicationMenu(null);
   mainWindow = new BrowserWindow({
     height: 562.5,
     useContentSize: true,
     width: 1000,
-    frame: false,
-    transparent: true,
+    // autoHideMenuBar: true,
+    frame: true,
+    // transparent: true,
+    icon: require('path').join(__dirname, icoUrl),
+    backgroundColor: '#fff'
+    // alwaysOnTop: true,
     // resizable: false,
     // webPreferences: {webSecurity: false}
   })
+  console.log(mainWindow.removeMenu)
+  console.log(mainWindow);
 
   mainWindow.loadURL(winURL)
 

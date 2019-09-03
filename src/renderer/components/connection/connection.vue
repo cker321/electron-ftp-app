@@ -1,24 +1,24 @@
 <template>
     <div class="connection" id="connection">
-        <div class="title-bar">离线视频上传工具
-            <div class="window-button">
-                <span @click="minimize">
-                    <i class="el-icon-minus"></i>
-                </span>
-                <span @click="maximize">
-                    <i class="fa fa-window-maximize" v-show="normalState"></i>
-                    <i class="fa fa-window-restore" v-show="!normalState"></i>
-                </span>
-                <span @click="close" class="close">
-                    <i class="el-icon-close"></i>
-                </span>
-                <!--el-icon-close-->
-            </div>
-        </div>
+        <!--<div class="title-bar">离线视频上传工具-->
+            <!--<div class="window-button">-->
+                <!--<span @click="minimize">-->
+                    <!--<i class="el-icon-minus"></i>-->
+                <!--</span>-->
+                <!--<span @click="maximize">-->
+                    <!--<i class="fa fa-window-maximize" v-show="normalState"></i>-->
+                    <!--<i class="fa fa-window-restore" v-show="!normalState"></i>-->
+                <!--</span>-->
+                <!--<span @click="close" class="close">-->
+                    <!--<i class="el-icon-close"></i>-->
+                <!--</span>-->
+                <!--&lt;!&ndash;el-icon-close&ndash;&gt;-->
+            <!--</div>-->
+        <!--</div>-->
         <!--登录ftp-->
         <div class="main-content"
              v-loading="loading"
-             element-loading-text="ftp登陆中，请稍等">
+             element-loading-text="正在登录到FTP服务器，请稍等...">
             <div v-show="!isLogin" class="logo">
                 <i class="el-icon-upload"></i>
                 |
@@ -129,23 +129,29 @@
     const {ipcRenderer} = require('electron');
     import folder from '../folder/index';
     import md5 from 'js-md5';
-
+    const IN_DEV = process.env.NODE_ENV === 'development';
+    const form = {
+        host: IN_DEV ? '10.128.129.155' : '',
+        user: IN_DEV ? 'root' : '',
+        password: IN_DEV ? 'Cloudwalk@123!' : '',
+        port: '21',
+        parser: 'utf-8',
+    };
+    const platform = {
+        face_host: IN_DEV ? '10.128.129.155' : '',
+        face_port: IN_DEV ? '10002' : '',
+        face_user: IN_DEV ? 'admin' : '',
+        face_password: IN_DEV ? 'cloudwalk_eye' : ''
+    }
     export default {
         name: 'connection',
         data() {
             return {
                 form: {
-                    host: '10.128.129.155',
-                    user: 'root',
-                    password: 'Cloudwalk@123!',
-                    port: '21',
-                    parser: 'utf-8'
+                    ...form
                 },
                 platform: {
-                    face_host: '10.128.129.155',
-                    face_port: '10002',
-                    face_user: 'admin',
-                    face_password: 'cloudwalk_eye'
+                    ...platform
                 },
                 folderData: [],
                 currentPath: '',
@@ -163,7 +169,9 @@
                 port: '',
 
                 // 自动跳转目录全路径
-                changePathFull: '/dev/shm'
+                changePathFull: '/dev/shm',
+
+                closed: false
             }
         },
         components: {
@@ -173,6 +181,7 @@
             // this.updateProgram();
             // this.updateConfirm();
             this.getUserInfo();
+            this.close();
         },
         methods: {
             // 登录ftp
@@ -237,13 +246,20 @@
             },
             // 关闭
             close() {
-                this.$confirm('确认退出本应用吗？', '退出程序', {
-                    type: 'warning',
-                })
-                    .then(_ => {
-                        ipcRenderer.send('close');
-                        done();
+                window.onbeforeunload = (e) => {
+                    console.log(e);
+                    if (this.closed) {
+                        return;
+                    }
+                    e.returnValue = false;
+                    this.$confirm('确认退出本应用吗？', '退出程序', {
+                        type: 'warning',
                     })
+                      .then(_ => {
+                          this.closed = true;
+                          ipcRenderer.send('close');
+                      })
+                };
             },
             // 最大化
             maximize() {
@@ -311,13 +327,11 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #FFF;
-        border: 1px solid #ccc;
+        background-color: #fff;
         .logo {
             font-size: 40px;
             padding: 10px 0 10px;
             line-height: 40px;
-
             .gray {
                 /*-webkit-filter: grayscale(100%);*/
                 /*filter: grayscale(100%);*/
@@ -327,6 +341,7 @@
             .el-icon-upload {
                 vertical-align: middle;
                 color: #409eff;
+                color: rgb(64, 175, 253);
             }
         }
 
@@ -349,16 +364,13 @@
                 top: 0;
                 display: flex;
                 -webkit-app-region: no-drag;
-
                 span {
                     flex: 1;
                     padding: 0 10px;
                     cursor: pointer;
-
                     &:hover {
                         background-color: rgba(255, 255, 255, .5);
                     }
-
                     &.close:hover {
                         background-color: rgba(255, 0, 0, 0.6);
                     }
@@ -368,11 +380,25 @@
     }
 </style>
 <style>
+    /*.el-form-item__label{*/
+        /*color: #c0dcf0;*/
+    /*}*/
+    /*.el-form-item.is-success .el-input__inner, .el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner, .el-form-item.is-success .el-textarea__inner:focus{*/
+        /*border-color: #0070c0*/
+    /*}*/
+    /*.el-input__inner{*/
+        /*background: #04142b!important;*/
+        /*color: #618aba;*/
+        /*border: 1px solid #0070c0;*/
+    /*}*/
     .connection .el-form--label-top .el-form-item__label {
         padding: 0;
     }
 
     .tr {
         text-align: right;
+    }
+    .el-dialog__wrapper{
+        overflow: hidden;
     }
 </style>

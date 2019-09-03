@@ -23,7 +23,6 @@
         </div>
         <el-table
                 :data="tableData"
-                stripe
                 max-height="500"
                 :style="{width: '100%', height: tableHeight}">
             <el-table-column prop="name" label="文件夹 / 名">
@@ -72,7 +71,7 @@
                  :host="host"
                  :port="port"
                  :isLogin="isLogin"
-                 :currentPath="newCurrentPath.join('/')"
+                 :currentPath="newCurrentPath && newCurrentPath.join('/')"
                  :tableData="tableData"
                  dialogVisible="dialogVisible"
                  @uploadSuccess="handleUploadSuccess"></addFile>
@@ -115,7 +114,7 @@
                 }
             },
             tableHeight () {
-                return this.windowHeight - 150 + 'px'
+                return this.windowHeight - 170 + 'px'
             }
         },
         props: {

@@ -56,8 +56,8 @@
                         action="''"
                         :before-upload="handleBeforeUpload"
                         :file-list="fileList">
-                    <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="选择单位：" prop="value">
