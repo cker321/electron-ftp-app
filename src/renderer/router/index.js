@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import connection from '../components/connection/index'
+import connection from '../components/connection/connection'
 import folder from '../components/folder/index'
 
 import { Loading } from 'element-ui';

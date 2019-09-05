@@ -1,6 +1,6 @@
 {
-  "name": "faceBigData-VideoUploader",
-  "version": "0.0.1",
+  "name": "ReID-VideoUploader",
+  "version": "1.0.2",
   "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "description": "An electron-vue ftp upload file project",
   "license": null,
@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "faceBigData-VideoUploader",
+    "productName": "离线视频上传工具",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"
@@ -64,6 +64,7 @@
     "ftp": "^0.3.10",
     "js-md5": "^0.7.3",
     "multer": "^1.4.1",
+    "nodejs-websocket": "^1.7.2",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1"
   },

@@ -1,4 +1,4 @@
-import { app, BrowserWindow,ipcMain } from 'electron'
+import electron, { app, BrowserWindow,ipcMain } from 'electron'
 const fs = require('fs'); // 引入fs模块
 const path = require('path');
 // import { autoUpdater } from 'electron-updater'
@@ -11,27 +11,44 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow,webContents;
+let mainWindow, webContents;
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
+const icoUrl = process.env.NODE_ENV === 'development'
+  ? '../../static/logo.ico'
+  : `/static/logo.ico`;
+
+
+const Menu = electron.Menu
 function createWindow () {
   /**
    * Initial window options
    */
+
+  Menu.setApplicationMenu(null);
   mainWindow = new BrowserWindow({
-    height: 663,
+    height: 562.5,
     useContentSize: true,
-    width: 1400,
-    frame: false
+    width: 1000,
+    // autoHideMenuBar: true,
+    frame: true,
+    // transparent: true,
+    icon: require('path').join(__dirname, icoUrl),
+    backgroundColor: '#fff'
+    // alwaysOnTop: true,
+    // resizable: false,
     // webPreferences: {webSecurity: false}
   })
+  console.log(mainWindow.removeMenu)
+  console.log(mainWindow);
 
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  mainWindow.openDevTools();
+  process.env.NODE_ENV === 'development' && mainWindow.openDevTools()
+
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -87,11 +104,11 @@ import { autoUpdater } from 'electron-updater'
 // app.on('ready', () => {
 //   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 // })
-const feedUrl = `https://github.com/cker321/electron-ftp-app`; // 更新包位置
+const feedUrl = `https://raw.githubusercontent.com/cker321/electron-ftp-app/master`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
   // console.log("update");
-  // checkForUpdates();
+  checkForUpdates();
 });
 
 
@@ -143,6 +160,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 }
+// console.log(process.argv)
 const args = [];
 if (!app.isPackaged) {
   args.push(path.resolve(process.argv[1]));
@@ -159,10 +177,17 @@ let infoEvent = '';
 
 handleArgv(process.argv);
 
+// 第二个实例 focus到窗口
 app.on('second-instance', (event, argv) => {
+  // fs.writeFile('C:/Users/yckj1041/AppData/Local/Programs/url.txt', JSON.stringify(argv), function(err) {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //   console.log('Saved.');
+  // });
   if (process.platform === 'win32') {
-    // Windows
-    handleArgv(argv);
+    // handleArgv(argv);
+    mainWindow.focus()
   }
 });
 
@@ -210,3 +235,4 @@ function sendUserInfo(message, data) {
 ipcMain.on('userInfoGet', (e, arg) => {
   sendUserInfo(infoEvent, queryParam)
 });
+

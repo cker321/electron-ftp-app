@@ -1,14 +1,17 @@
 <style lang="less">
     .vue-treeselect {
-        width: 550px;
-        float: left;
         margin-left: 10px;
     }
 
     .el-upload-dragger {
-        width: 550px;
+        width: 100%
     }
-
+    .upload-demo{
+        padding-left: 10px;
+    }
+    .el-upload{
+        width: 100%;
+    }
     .el-upload__tip {
         margin-top: -15px;
     }
@@ -21,6 +24,14 @@
     .el-upload-dragger .el-upload__text{
         line-height: 1;
     }
+    .loadingModal{
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+    }
 </style>
 
 <template>
@@ -28,7 +39,7 @@
                width="50%"
                :modal-append-to-body="false"
                v-loading="loading"
-               element-loading-text="正在上传，请稍等"
+               :element-loading-text="loadingText"
                element-loading-background="rgba(0, 0, 0, 0.8)"
                :modal-close="false"
                :close-on-click-modal="false"
@@ -37,18 +48,16 @@
             <i class="el-icon-upload"></i>上传文件
         </div>
         <div class="body">
-            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80" action>
+            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80">
                 <el-form-item label="上传文件：">
                     <el-upload
-                            class="upload-demo"
-                            drag
-                            action="http://localhost:3009/fileUpload"
-                            :before-upload="handleBeforeUpload"
-                            :file-list="fileList"
-                            multiple>
+                        class="upload-demo"
+                        drag
+                        action="''"
+                        :before-upload="handleBeforeUpload"
+                        :file-list="fileList">
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                        <div class="el-upload__tip" slot="tip">只能上传avi/mp4文件，且不超过500M</div>
                     </el-upload>
                 </el-form-item>
                 <el-form-item label="选择单位：" prop="value">
@@ -57,7 +66,7 @@
             </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button @click="handleClose">取 消</el-button>
+            <el-button @click="handleClose" :disabled="loading">取 消</el-button>
             <el-button type="primary" @click="handleOk" :disabled="loading">确 定</el-button>
         </span>
     </el-dialog>
@@ -66,7 +75,8 @@
 <script>
     import Treeselect from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-
+    // 允许提交的文件格式
+    const FILE_TYPE = ['MP4','AVI','MOV','WMV','3GP','MKV','FLV','F4V', 'RMVB','MPEG','MPG','DAT'];
     export default {
         name: 'addFile',
         components: {
@@ -77,13 +87,28 @@
                 type: String,
                 default: ''
             },
+            port: {
+                type: String,
+                default: ''
+            },
             isLogin: {
                 type: Boolean,
                 default: false
+            },
+            currentPath: {
+                type: String,
+                default: ''
+            },
+            tableData: {
+                type: Array,
+                default () {
+                    return []
+                }
             }
         },
         data() {
             return {
+                websocket: null,
                 dialogVisible: false,
                 fileObj: null,
                 defaultForm: {},
@@ -96,7 +121,8 @@
                         { required: true, message: '选择单位', trigger: 'blur' }
                     ],
                 },
-                currentPath: ''
+                loadingText: '正在上传，请稍等，已上传：0%，速度：0M/S',
+                loadingPercentage: 0
             }
         },
         watch: {
@@ -122,12 +148,18 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
-                // console.log(file)
-                this.fileObj = file;
-                this.fileList.push(file)
+                let fileName = file.name;
+                let fileType = (fileName.split('.')[fileName.split('.').length - 1]).toUpperCase();
+                if (FILE_TYPE.includes(fileType)) {
+                    this.fileObj = file;
+                    this.fileList = [file];
+                } else {
+                    this.$message.error('文件格式错误！')
+                }
                 return false;
             },
             handleOk() {
+                console.log(this.fileObj)
                 if (!this.fileObj) {
                     this.$notify.error({
                         message: '请选取视频文件',
@@ -149,30 +181,60 @@
                         name: item.name
                     })
                 })
-
                 this.loading = true;
-                this.$post('fileInfoUploads', {filePath})
-                    .then(res => {
+                // 判断重名直接提交到
+                if (this.isSameFile(this.fileObj.name, this.fileObj.size)) {
+                    this.$notify({
+                        message: '上传成功！',
+                        type: 'success',
+                        offset: 50
+                    });
+                    this.videoAdd(this.fileObj.name);
+                    this.hideDialog();
+                    this.loading = false;
+                    return;
+                }
+                this.loadingText = '正在上传，请稍等，已上传：0%，速度：0M/S';
+
+                this.websocket = new WebSocket('ws://localhost:1300');
+
+                this.websocket.onopen = (evt) => {
+                    if (evt.type === 'open') {
+                        // 延迟发送
+                        setTimeout(() => {
+                            this.websocket.send(JSON.stringify({
+                                path: filePath
+                            }));
+                        }, 500);
+                    }
+                };
+
+                this.websocket.onmessage = (evt) => {
+                    let data = JSON.parse(evt.data)
+                    if (data.type === 'success') {
                         this.hideDialog();
-                        this.fileList = [];
-                        // this.$message.success('上传成功！');
+                        this.loading = false;
                         this.$notify({
                             message: '上传成功！',
                             type: 'success',
                             offset: 50
                         });
-                        this.currentPath = res.currentPath;
-                        res.fileNames.forEach(item => {
+                        data.fileName.forEach(item => {
                             this.videoAdd(item);
                         })
-                    })
-                    .catch(err => {
-                        this.$notify.error({
-                            message: err.message,
-                            offset: 50
-                        });
-                        this.loading = false;
-                    })
+                        this.websocket.close();
+                    } else {
+                        this.loadingPercentage = parseInt(data.data);
+                        this.loadingText = `正在上传，请稍等，已上传：${data.data}%，速度：${data.speed}M/S`
+                    }
+                };
+
+            },
+            // 判断是否为相同文件
+            isSameFile (filename, fileSize) {
+                return this.tableData.findIndex(item => {
+                    return item.name === filename && item.size === fileSize
+                }) !== -1;
             },
             // 调用火眼接口
             videoAdd(fileName) {
@@ -182,11 +244,12 @@
                     userId: '1000',
                     remark: 'ftp工具上传',
                     path: `${this.currentPath}/${fileName}`,
+                    engineTypes: [3]
                 }
                 Object.keys(params).map(key => {
                     formData.append(key, params[key]);
                 });
-                this.$_post(`http://${this.host}:10002/facebigdata/device/video/add`, formData)
+                this.$_post(`http://${this.host}:${this.port}/facebigdata/device/video/add`, formData)
                     .then(res => {
                         // this.$message.success(res.message)
                         this.$notify({
@@ -207,7 +270,7 @@
             },
             // 获取单位
             getOrgList() {
-                this.$_post(`http://${this.host}:10002/facebigdata/org/list`, {})
+                this.$_post(`http://${this.host}:${this.port}/facebigdata/org/list`, {})
                     .then(res => {
                         this.initTree(res.data);
                     })
@@ -236,3 +299,6 @@
         }
     }
 </script>
+<style lang="less">
+
+</style>

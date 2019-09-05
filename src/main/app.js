@@ -1,29 +1,7 @@
 let express = require('express');
 let app = express();
-// let fs = require('fs');
-// let multer  = require('multer')
 let api = require('./router/index');
-
-// let storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, './uploads');
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.originalname);
-//     }
-// });
-
-// let upload = multer({ storage: storage })
-
-// fs.mkdir("./uploads",function(err){
-//     if (err) {
-//         return;
-//     }
-//     console.log("目录创建成功。");
-// });
-
-// 最多同时上传10个文件
-// app.use(upload.array('file', 10));
+let ws = require('./router/websocket');
 
 // 跨域设置
 app.all("*", function(req, res, next) {
@@ -44,6 +22,13 @@ app.all("*", function(req, res, next) {
 app.use('/', api);
 
 const port = process.env.PORT || 3009;
+
+ws.createServer(function(conn) {
+      console.log('New connection')
+      conn.on('close', function(code, reason) {
+          console.log('Connection closed')
+      })
+  }).listen(1300)
 
 app.listen(port, () => {
     console.log(`server running @ http://localhost:${port}`);

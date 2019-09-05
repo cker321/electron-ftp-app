@@ -23,9 +23,8 @@
         </div>
         <el-table
                 :data="tableData"
-                stripe
                 max-height="500"
-                style="width: 100%">
+                :style="{width: '100%', height: tableHeight}">
             <el-table-column prop="name" label="文件夹 / 名">
                 <template slot-scope="props">
                     <el-button style="width: 100%; text-align: left"
@@ -54,22 +53,26 @@
                     width="200"
                     label="修改日期">
                 <template slot-scope="props">
-                    {{(new Date(props.row.date.toString())).toLocaleString()}}
+                    {{new Date((new Date(props.row.date)).getTime() + 8 * 3600 * 1000).toLocaleString()}}
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="date"
                     width="200"
                     label="操作">
                 <template slot-scope="props">
-                    <el-button v-if="props.row.type === 'd'" @click="rmdir(props.row.name)" type="text">删除目录</el-button>
-                    <el-button v-else @click="rmfile(props.row.name)" type="text">删除文件</el-button>
+                    <!--<el-button v-if="props.row.type === 'd'" @click="rmdir(props.row.name)" type="text">删除目录</el-button>-->
+                    <!--<el-button v-else @click="rmfile(props.row.name)" type="text">删除文件</el-button>-->
+                    <el-button v-if="props.row.type !== 'd'" @click="rmfile(props.row.name)" type="text">删除文件</el-button>
+                    <span v-else>-</span>
                 </template>
             </el-table-column>
         </el-table>
         <addFile ref="addFile"
                  :host="host"
+                 :port="port"
                  :isLogin="isLogin"
+                 :currentPath="newCurrentPath && newCurrentPath.join('/')"
+                 :tableData="tableData"
                  dialogVisible="dialogVisible"
                  @uploadSuccess="handleUploadSuccess"></addFile>
         <addFolder ref="addFolder"
@@ -93,7 +96,9 @@
                 tableData: [],
                 newCurrentPath: '',
                 dialogVisible: false,
-                loading: false
+                loading: false,
+                loadingAnimate: false,
+                windowHeight: window.outerHeight
             }
         },
         computed: {
@@ -107,6 +112,9 @@
                     size = (size >= (1000 * 1024) ? (size/1024/1024).toFixed(2) + 'GB' : size >= 500 ? (size / 1024).toFixed(2) + 'MB' : size.toFixed(2) + 'KB');
                     return size
                 }
+            },
+            tableHeight () {
+                return this.windowHeight - 170 + 'px'
             }
         },
         props: {
@@ -124,6 +132,10 @@
                 type: String,
                 default: 'localhost'
             },
+            port: {
+                type: String,
+                default: 'localhost'
+            },
             isLogin: {
                 type: Boolean,
                 default: false
@@ -136,8 +148,7 @@
             currentPath(val) {
                 this.newCurrentPath = val;
                 this.splitPath();
-            },
-            host(val) {console.log(val)}
+            }
         },
         methods: {
             logOut() {
@@ -156,7 +167,8 @@
                                 this.$router.push({
                                     name: 'connection'
                                 })
-                                this.$emit('logout')
+                                this.$emit('logout');
+                                this.newCurrentPath = [];
                             } else {
                                 this.$notify.error({
                                     message: '退出失败',
@@ -177,7 +189,7 @@
             },
             changePath(path) {
                 this.loading = true;
-                this.$get('changePath', {path})
+                this.$get('changeDirectory', {path})
                     .then(res => {
                         this.newCurrentPath = res.currentPath;
                         this.tableData = res.data;
@@ -234,7 +246,7 @@
                         fullPath += this.newCurrentPath[i] + '/'
                     }
                 }
-                this.$get('changePathFull', {fullPath})
+                this.$get('changeDirectoryFull', {fullPath})
                     .then(res => {
                         this.loading = false;
                         this.newCurrentPath = fullPath;
@@ -245,9 +257,32 @@
                         this.loading = false;
                     })
             },
+            async autoChangePathFull (pathFull) {
+                this.loadingAnimate = this.$loading({
+                    lock: true,
+                    text: '正在跳转到指定目录，请稍等'
+                });
+                await this.$get('changeDirectoryFull', {fullPath: pathFull})
+                    .then(res => {
+                        this.loading = false;
+                        this.newCurrentPath = pathFull;
+                        this.tableData = res.data;
+                        this.splitPath();
+                    })
+                    .catch(() => {
+                        this.loading = false;
+                    })
+                this.loadingAnimate.close();
+            },
             handleUploadSuccess() {
                 this.changePathFull(this.newCurrentPath.length - 1)
             }
+        },
+        mounted () {
+            window.addEventListener('resize', () => {
+                this.windowHeight = window.outerHeight
+                // console.log(window.outerHeight)
+            })
         }
     }
 </script>
@@ -256,14 +291,13 @@
         .fl {
             float: left;
         }
-
         .host {
             color: #ccc;
             padding-bottom: 10px;
             margin-bottom: 10px;
             position: absolute;
-            left: 20px;
-            top: 50px;
+            left: 0;
+            top: 0;
         }
 
         .currentPath {
@@ -282,8 +316,7 @@
         .toolBar {
             padding: 10px 0;
         }
-
-        /*position: fixed;*/
+        position: relative;
         z-index: 10;
         left: 0;
         top: 0;
