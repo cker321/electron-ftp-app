@@ -131,9 +131,9 @@
     import md5 from 'js-md5';
     const IN_DEV = process.env.NODE_ENV === 'development';
     const form = {
-        host: IN_DEV ? '10.128.129.155' : '',
+        host: IN_DEV ? '192.168.40.48' : '',
         user: IN_DEV ? 'root' : '',
-        password: IN_DEV ? 'Cloudwalk@123!' : '',
+        password: IN_DEV ? 'Zr59901212' : '',
         port: '21',
         parser: 'utf-8',
     };
