@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import connection from '../components/connection/connection'
-import folder from '../components/folder/index'
+import basicLayout from '@/layout/basicLayout'
+import connection from '@/components/connection/connection'
+import folder from '@/components/folder/index'
 
 import { Loading } from 'element-ui';
 let loading = null;
@@ -12,7 +13,12 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            redirect: '/connection'
+            redirect: '/home'
+        },
+        {
+            path: '/home',
+            name: 'home',
+            component: basicLayout
         },
         {
             path: '/connection',

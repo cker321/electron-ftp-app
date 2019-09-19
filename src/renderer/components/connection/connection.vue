@@ -76,73 +76,13 @@
                     :currentPath="currentPath"
                     @logout="folderData = []; isLogin = false"></folder>
         </div>
-        <!--登录到火眼-->
-        <el-dialog center
-                   title="登录跨镜追踪"
-                   width="70%"
-                   :visible.sync="dialogVisible"
-                   :modal-append-to-body="false"
-                   :show-close="false">
-            <el-form ref="platform"
-                     :model="platform"
-                     :rules="{}">
-                <el-row :gutter="20">
-                    <el-col :span="6">
-                        <el-form-item label="平台地址"
-                                      prop="face_host"
-                                      :rules="{required: true, message: '地址不能为空', trigger: 'blur'}">
-                            <el-input v-model="platform.face_host" placeholder="请输入跨镜追踪地址"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="平台端口"
-                                      prop="face_port"
-                                      :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
-                            <el-input v-model="platform.face_port" placeholder="请输入跨镜追踪端口，非页面访问端口"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="请输入用户名"
-                                      prop="face_user"
-                                      :rules="{required: true, message: '用户名不能为空', trigger: 'blur'}">
-                            <el-input v-model="platform.face_user" placeholder="请输入用户名"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-form-item label="请输入密码"
-                                      prop="face_password"
-                                      :rules="{required: true, message: '密码不能为空', trigger: 'blur'}">
-                            <el-input v-model="platform.face_password" placeholder="请输入密码" type="password"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="resetCloudwalk();dialogVisible = false;" v-loading="faceLoading">取 消</el-button>
-                <el-button type="primary" @click="loginToCloudWalk()" v-loading="faceLoading">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     const {ipcRenderer} = require('electron');
-    import folder from '../folder/index';
-    import md5 from 'js-md5';
-    const IN_DEV = process.env.NODE_ENV === 'development';
-    const form = {
-        host: IN_DEV ? '192.168.40.48' : '',
-        user: IN_DEV ? 'root' : '',
-        password: IN_DEV ? 'Zr59901212' : '',
-        port: '21',
-        parser: 'utf-8',
-    };
-    const platform = {
-        face_host: IN_DEV ? '10.128.129.155' : '',
-        face_port: IN_DEV ? '10002' : '',
-        face_user: IN_DEV ? 'admin' : '',
-        face_password: IN_DEV ? 'cloudwalk_eye' : ''
-    }
+    import folder from '@/components/folder';
+    import form from '../../config/serverInfo.js';
     export default {
         name: 'connection',
         data() {
@@ -150,27 +90,14 @@
                 form: {
                     ...form
                 },
-                platform: {
-                    ...platform
-                },
                 folderData: [],
                 currentPath: '',
                 isLogin: false,
                 // 窗口未最大化
                 normalState: true,
-
-                // 登录火眼弹窗
-                dialogVisible: false,
-
                 loading: false,
-                faceLoading: false,
-
                 host: '',
                 port: '',
-
-                // 自动跳转目录全路径
-                changePathFull: '/dev/shm',
-
                 closed: false
             }
         },
@@ -178,8 +105,6 @@
             folder
         },
         mounted() {
-            // this.updateProgram();
-            // this.updateConfirm();
             this.getUserInfo();
             this.close();
         },
@@ -196,8 +121,6 @@
                                   if (res.code === '0000000') {
                                       this.folderData = res.data;
                                       this.currentPath = res.currentPath;
-                                      // 登录火眼界面
-                                      this.dialogVisible = true;
                                       resolve('ok')
                                   } else {
                                       this.$message.error(res.msg + '请检查登录项是否填写正确！')
@@ -208,46 +131,9 @@
                     });
                 })
             },
-            // 登录火眼
-            async loginToCloudWalk(alreadyMD5 = false) {
-                this.$refs.platform.validate(async (valid) => {
-                    if (valid) {
-                        this.platform.face_host = this.platform.face_host.split(':')[0];
-                        this.faceLoading = true;
-                        await this.$_post(`http://${this.platform.face_host}:${this.platform.face_port}/facebigdata/auth/login`, {
-                            password: alreadyMD5 ? this.platform.face_password : md5(this.platform.face_password),
-                            username: this.platform.face_user
-                        })
-                            .then(res => {
-                                this.faceLoading = false;
-                                this.host = this.platform.face_host;
-                                this.port = this.platform.face_port;
-                                sessionStorage.setItem('cloudwalk-token', res.data.token);
-                                this.isLogin = true;
-                                this.dialogVisible = false;
-                                this.$nextTick(() => {
-                                    this.resetCloudwalk();
-                                })
-                            })
-                            .catch(err => {
-                                this.faceLoading = false;
-                                this.$message.error('登录跨镜追踪失败，' + err.message);
-                            })
-                    }
-                })
-            },
-            // resetFields
-            resetCloudwalk() {
-                this.$refs.platform.resetFields();
-            },
-            // 最小化
-            minimize() {
-                ipcRenderer.send('minimize');
-            },
             // 关闭
             close() {
                 window.onbeforeunload = (e) => {
-                    console.log(e);
                     if (this.closed) {
                         return;
                     }
@@ -261,25 +147,8 @@
                       })
                 };
             },
-            // 最大化
-            maximize() {
-                ipcRenderer.send('maximize');
-                this.normalState = !this.normalState;
-            },
-            // 更新app
-            updateProgram() {
-                ipcRenderer.send('update')
-            },
-            updateConfirm() {
-                ipcRenderer.on('message', (event, {message, data}) => {
-                    if (message === 'isUpdateNow') {
-                        if (confirm('是否现在更新？')) {
-                            ipcRenderer.send('updateNow');
-                        }
-                    }
-                });
-            },
-            // 从火眼url跳转到此APP
+
+            // 从外部url跳转到此APP
             async getUserInfo() {
                 ipcRenderer.send('userInfoGet');
                 ipcRenderer.on('userInfoSend', async (event, {message, data}) => {
@@ -287,10 +156,6 @@
                         this.convertParams(data)
                         // 登录ftp
                         await this.sendConnect();
-                        // 登录火眼
-                        await this.loginToCloudWalk(true);
-                        // 跳转到默认目录
-                        await this.$refs.folder.autoChangePathFull(this.changePathFull);
                         // 打开上传窗口
                         this.$refs.folder.addFile();
                     }
@@ -298,20 +163,12 @@
             },
             // 转换
             convertParams (params) {
-                console.log(params);
                 let searchParams = new URLSearchParams(params);
                 // ftp登录参数
                 this.form.host = searchParams.get('host');
                 this.form.user = searchParams.get('username');
                 this.form.password = searchParams.get('password');
                 this.form.port = searchParams.get('port');
-                // 火眼登录参数
-                this.platform.face_host = searchParams.get('faceHost')
-                this.platform.face_port = searchParams.get('facePort')
-                this.platform.face_user = searchParams.get('faceUser')
-                this.platform.face_password = searchParams.get('facePassword');
-                // 跳转目录
-                // this.changePathFull = searchParams.get('changePathFull');
             }
         }
     }

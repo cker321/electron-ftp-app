@@ -1,6 +1,6 @@
 {
-  "name": "ReID-VideoUploader",
-  "version": "1.0.2",
+  "name": "FtpFileTransfer",
+  "version": "1.0.0",
   "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "description": "An electron-vue ftp upload file project",
   "license": null,
@@ -17,7 +17,7 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "离线视频上传工具",
+    "productName": "FtpFileTransfer",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"

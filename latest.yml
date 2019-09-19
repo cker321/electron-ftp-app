@@ -1,8 +1,8 @@
-version: 5.0.1
+version: 1.0.0
 files:
-  - url: faceBigData-VideoUploader Setup 0.0.1.exe
-    sha512: Qx3kaf18oPl/X+isB6Ip0nSHqp50/lEcL43qkgnWoklQFoWDjUFeAIRqJG3rv2phxM1AckGqVkSwskfjrSp7Jw==
-    size: 46428955
-path: faceBigData-VideoUploader Setup 0.0.1.exe
-sha512: Qx3kaf18oPl/X+isB6Ip0nSHqp50/lEcL43qkgnWoklQFoWDjUFeAIRqJG3rv2phxM1AckGqVkSwskfjrSp7Jw==
-releaseDate: '2019-04-22T01:42:27.671Z'
+  - url: FtpFileTransfer Setup 1.0.0.exe
+    sha512: YJQqomFyuEcKFopJ7qzQyb5+MOQFBTHX/C1cLdTJz5lHUZfMGrbgctrRWjEZxjUF1QuAgSLIScR0w15dDC/ufg==
+    size: 46596405
+path: FtpFileTransfer Setup 1.0.0.exe
+sha512: YJQqomFyuEcKFopJ7qzQyb5+MOQFBTHX/C1cLdTJz5lHUZfMGrbgctrRWjEZxjUF1QuAgSLIScR0w15dDC/ufg==
+releaseDate: '2019-09-19T09:05:29.515Z'

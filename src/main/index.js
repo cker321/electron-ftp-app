@@ -107,7 +107,7 @@ import { autoUpdater } from 'electron-updater'
 const feedUrl = `https://raw.githubusercontent.com/cker321/electron-ftp-app/master`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
-  // console.log("update");
+  console.log("update");
   checkForUpdates();
 });
 
@@ -115,6 +115,12 @@ ipcMain.on('update', (e, arg) => {
 
 
 let checkForUpdates = () => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(__dirname)
+    autoUpdater.updateConfigPath = path.join(__dirname, '../../latest.yml')
+  } else {
+    autoUpdater.updateConfigPath = path.join(__dirname, '../../../app-update.yml')
+  }
   // 配置安装包远端服务器
   autoUpdater.setFeedURL(feedUrl);
 
