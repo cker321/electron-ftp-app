@@ -1,6 +1,6 @@
 {
   "name": "FtpFileTransfer",
-  "version": "5.0.0",
+  "version": "1.0.0",
   "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "description": "An electron-vue ftp upload file project",
   "license": null,
