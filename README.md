@@ -1,3 +1,4 @@
+![N|Solid](https://github.com/cker321/electron-ftp-app/blob/master/static/logo.png?raw=true)
 # electron-ftp-app
 
 > Electron + Vue-Cli + Node.js + FTP desktop application
