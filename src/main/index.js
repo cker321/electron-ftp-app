@@ -41,9 +41,6 @@ function createWindow () {
     // resizable: false,
     // webPreferences: {webSecurity: false}
   })
-  console.log(mainWindow.removeMenu)
-  console.log(mainWindow);
-
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
@@ -104,42 +101,53 @@ import { autoUpdater } from 'electron-updater'
 // app.on('ready', () => {
 //   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 // })
-const feedUrl = `https://raw.githubusercontent.com/cker321/electron-ftp-app/master`; // 更新包位置
+const feedUrl = `https://raw.githubusercontent.com/cker321/electron-ftp-app/master/`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
   console.log("update");
   checkForUpdates();
 });
 
-
-
+let infoIndex = 0;
+function saveInfo (info) {
+    fs.writeFile(`C:/Users/yckj1041/Desktop/updateInfo${infoIndex}.json`, JSON.stringify(info), function(err) {
+      if (err) {
+        throw err;
+      }
+    });
+    infoIndex++;
+};
 
 let checkForUpdates = () => {
   if (process.env.NODE_ENV === 'development') {
-    console.log(__dirname)
-    autoUpdater.updateConfigPath = path.join(__dirname, '../../latest.yml')
-  } else {
-    autoUpdater.updateConfigPath = path.join(__dirname, '../../../app-update.yml')
+    // autoUpdater.updateConfigPath = path.join(__dirname, '../../latest.yml')
   }
   // 配置安装包远端服务器
   autoUpdater.setFeedURL(feedUrl);
 
   // 下面是自动更新的整个生命周期所发生的事件
   autoUpdater.on('error', function(message) {
+    saveInfo(message);
     sendUpdateMessage('error', message);
   });
   autoUpdater.on('checking-for-update', function(message) {
+    saveInfo(message);
+
     sendUpdateMessage('checking-for-update', message);
   });
   autoUpdater.on('update-available', function(message) {
+    saveInfo(message);
     sendUpdateMessage('update-available', message);
   });
   autoUpdater.on('update-not-available', function(message) {
+    saveInfo(message);
     sendUpdateMessage('update-not-available', message);
   });
 
   // 更新下载进度事件
   autoUpdater.on('download-progress', function(progressObj) {
+    saveInfo(message);
+
     sendUpdateMessage('downloadProgress', progressObj);
   });
   // 更新下载完成事件
