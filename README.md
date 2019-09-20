@@ -3,7 +3,7 @@
 
 > Electron + Vue-Cli + Node.js + FTP desktop application
 >
-![N|Solid](https://github.com/cker321/electron-ftp-app/blob/master/static/alook.jpg?raw=true)
+![N|Solid](https://github.com/cker321/electron-ftp-app/blob/master/static/alook.png?raw=true)
 
 #### Build Setup
 
