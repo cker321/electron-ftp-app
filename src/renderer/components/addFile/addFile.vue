@@ -48,7 +48,7 @@
             <i class="el-icon-upload"></i>上传文件
         </div>
         <div class="body">
-            <el-form ref="defaultForm" :model="defaultForm" :rules="rules" label-width="80">
+            <el-form ref="defaultForm" :model="defaultForm" label-width="80">
                 <el-form-item label="上传文件：">
                     <el-upload
                         class="upload-demo"
@@ -60,9 +60,6 @@
                         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="选择单位：" prop="value">
-                    <treeselect v-model="value" :options="options"/>
-                </el-form-item>
             </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -73,15 +70,8 @@
 </template>
 
 <script>
-    import Treeselect from '@riophae/vue-treeselect'
-    import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-    // 允许提交的文件格式
-    const FILE_TYPE = ['MP4','AVI','MOV','WMV','3GP','MKV','FLV','F4V', 'RMVB','MPEG','MPG','DAT'];
     export default {
         name: 'addFile',
-        components: {
-            Treeselect
-        },
         props: {
             host: {
                 type: String,
@@ -90,10 +80,6 @@
             port: {
                 type: String,
                 default: ''
-            },
-            isLogin: {
-                type: Boolean,
-                default: false
             },
             currentPath: {
                 type: String,
@@ -116,22 +102,9 @@
                 loading: false,
                 options: [],
                 value: null,
-                rules: {
-                    value: [
-                        { required: true, message: '选择单位', trigger: 'blur' }
-                    ],
-                },
                 loadingText: '正在上传，请稍等，已上传：0%，速度：0M/S',
                 loadingPercentage: 0
             }
-        },
-        watch: {
-            isLogin(val) {
-                val && this.getOrgList();
-            }
-        },
-        mounted() {
-            // this.getOrgList();
         },
         methods: {
             handleClose() {
@@ -148,28 +121,14 @@
                 this.dialogVisible = false;
             },
             handleBeforeUpload(file, key, fileList) {
-                let fileName = file.name;
-                let fileType = (fileName.split('.')[fileName.split('.').length - 1]).toUpperCase();
-                if (FILE_TYPE.includes(fileType)) {
-                    this.fileObj = file;
-                    this.fileList = [file];
-                } else {
-                    this.$message.error('文件格式错误！')
-                }
+                this.fileObj = file;
+                this.fileList = [file];
                 return false;
             },
             handleOk() {
-                console.log(this.fileObj)
                 if (!this.fileObj) {
                     this.$notify.error({
                         message: '请选取视频文件',
-                        offset: 50
-                    });
-                    return false;
-                }
-                if (!this.value) {
-                    this.$notify.error({
-                        message: '请选择所属单位！',
                         offset: 50
                     });
                     return false;
@@ -182,18 +141,7 @@
                     })
                 })
                 this.loading = true;
-                // 判断重名直接提交到
-                if (this.isSameFile(this.fileObj.name, this.fileObj.size)) {
-                    this.$notify({
-                        message: '上传成功！',
-                        type: 'success',
-                        offset: 50
-                    });
-                    this.videoAdd(this.fileObj.name);
-                    this.hideDialog();
-                    this.loading = false;
-                    return;
-                }
+
                 this.loadingText = '正在上传，请稍等，已上传：0%，速度：0M/S';
 
                 this.websocket = new WebSocket('ws://localhost:1300');
@@ -219,82 +167,19 @@
                             type: 'success',
                             offset: 50
                         });
-                        data.fileName.forEach(item => {
-                            this.videoAdd(item);
-                        })
                         this.websocket.close();
+                        this.$emit('uploadSuccess')
                     } else {
                         this.loadingPercentage = parseInt(data.data);
                         this.loadingText = `正在上传，请稍等，已上传：${data.data}%，速度：${data.speed}M/S`
                     }
                 };
-
             },
             // 判断是否为相同文件
             isSameFile (filename, fileSize) {
                 return this.tableData.findIndex(item => {
                     return item.name === filename && item.size === fileSize
                 }) !== -1;
-            },
-            // 调用火眼接口
-            videoAdd(fileName) {
-                let formData = new FormData();
-                let params = {
-                    orgId: this.value,
-                    userId: '1000',
-                    remark: 'ftp工具上传',
-                    path: `${this.currentPath}/${fileName}`,
-                    engineTypes: [3]
-                }
-                Object.keys(params).map(key => {
-                    formData.append(key, params[key]);
-                });
-                this.$_post(`http://${this.host}:${this.port}/facebigdata/device/video/add`, formData)
-                    .then(res => {
-                        // this.$message.success(res.message)
-                        this.$notify({
-                            message: res.message,
-                            type: 'success',
-                            offset: 50
-                        });
-                        this.loading = false;
-                        this.$emit('uploadSuccess')
-                    })
-                    .catch(err => {
-                        this.$notify.error({
-                            message: err.message,
-                            offset: 50
-                        });
-                        this.loading = false;
-                    })
-            },
-            // 获取单位
-            getOrgList() {
-                this.$_post(`http://${this.host}:${this.port}/facebigdata/org/list`, {})
-                    .then(res => {
-                        this.initTree(res.data);
-                    })
-            },
-            // 将数组转换为多层级对象数组
-            initTree(data) {
-                let temp = {};
-                let tree = [];
-                for (let i in data) {
-                    temp[data[i].orgId] = data[i];
-                    data[i].label = data[i].orgCname;
-                    data[i].id = data[i].orgId;
-                }
-                for (let i in temp) {
-                    if (temp[i].parentId) {
-                        if (!temp[temp[i].parentId].children) {
-                            temp[temp[i].parentId].children = [];
-                        }
-                        temp[temp[i].parentId].children.push(temp[i]);
-                    } else {
-                        tree.push(temp[i]);
-                    }
-                }
-                this.options = tree
             }
         }
     }

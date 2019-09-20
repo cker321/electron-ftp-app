@@ -17,8 +17,8 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html`
 
 const icoUrl = process.env.NODE_ENV === 'development'
-  ? '../../static/logo.ico'
-  : `/static/logo.ico`;
+  ? '../../static/logo.png'
+  : `/static/logo.png`;
 
 
 const Menu = electron.Menu
@@ -44,7 +44,8 @@ function createWindow () {
   mainWindow.loadURL(winURL)
 
   // 打开dev工具
-  process.env.NODE_ENV === 'development' && mainWindow.openDevTools()
+  // process.env.NODE_ENV === 'development1' && mainWindow.openDevTools()
+  mainWindow.openDevTools()
 
 
   mainWindow.on('closed', () => {
@@ -54,7 +55,7 @@ function createWindow () {
   webContents = mainWindow.webContents;
 }
 
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -101,7 +102,8 @@ import { autoUpdater } from 'electron-updater'
 // app.on('ready', () => {
 //   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 // })
-const feedUrl = `https://raw.githubusercontent.com/cker321/electron-ftp-app/master/`; // 更新包位置
+const feedUrl = 'http://localhost:88'; // 更新包位置
+// const feedUrl = `https://github.com/cker321/electron-ftp-app/releases/download/latest/`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {
   console.log("update");
@@ -117,39 +119,40 @@ function saveInfo (info) {
     });
     infoIndex++;
 };
+autoUpdater.logger = require("electron-log");
+autoUpdater.logger.transports.file.level = "info";
 
 let checkForUpdates = () => {
   if (process.env.NODE_ENV === 'development') {
-    // autoUpdater.updateConfigPath = path.join(__dirname, '../../latest.yml')
+    autoUpdater.updateConfigPath = path.join(__dirname, '../../latest.yml')
   }
   // 配置安装包远端服务器
   autoUpdater.setFeedURL(feedUrl);
 
   // 下面是自动更新的整个生命周期所发生的事件
   autoUpdater.on('error', function(message) {
-    saveInfo(message);
+    // saveInfo(message);
     sendUpdateMessage('error', message);
   });
   autoUpdater.on('checking-for-update', function(message) {
-    saveInfo(message);
-
+    // saveInfo(message);
     sendUpdateMessage('checking-for-update', message);
   });
   autoUpdater.on('update-available', function(message) {
-    saveInfo(message);
+    // saveInfo(message);
     sendUpdateMessage('update-available', message);
   });
   autoUpdater.on('update-not-available', function(message) {
-    saveInfo(message);
+    // saveInfo(message);
     sendUpdateMessage('update-not-available', message);
   });
 
   // 更新下载进度事件
   autoUpdater.on('download-progress', function(progressObj) {
-    saveInfo(message);
-
+    // saveInfo(message);
     sendUpdateMessage('downloadProgress', progressObj);
   });
+
   // 更新下载完成事件
   autoUpdater.on('update-downloaded', function(event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
     sendUpdateMessage('isUpdateNow');

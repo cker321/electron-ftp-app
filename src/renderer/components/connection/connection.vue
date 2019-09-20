@@ -20,9 +20,7 @@
              v-loading="loading"
              element-loading-text="正在登录到FTP服务器，请稍等...">
             <div v-show="!isLogin" class="logo">
-                <i class="el-icon-upload"></i>
-                |
-                <img class="gray" src="./facebigdata.png" width="36" alt="">
+                <img class="gray" src="./application.png" width="50" alt="">
             </div>
             <el-form v-show="!isLogin"
                      ref="form"
@@ -119,6 +117,7 @@
                               .then(res => {
                                   this.loading = false;
                                   if (res.code === '0000000') {
+                                      this.isLogin = true;
                                       this.folderData = res.data;
                                       this.currentPath = res.currentPath;
                                       resolve('ok')
@@ -133,6 +132,7 @@
             },
             // 关闭
             close() {
+                return;
                 window.onbeforeunload = (e) => {
                     if (this.closed) {
                         return;
@@ -147,7 +147,6 @@
                       })
                 };
             },
-
             // 从外部url跳转到此APP
             async getUserInfo() {
                 ipcRenderer.send('userInfoGet');

@@ -1,7 +1,6 @@
 # electron-ftp-app
 
-> Electron + Vue + Node.js + FTP 的桌面app
->> 使用async await改造node，支持浏览器端打开 
+> Electron + Vue-Cli + Node.js + FTP desktop application
 
 #### Build Setup
 
@@ -14,6 +13,5 @@ npm run dev
 
 # build electron application for production
 npm run build
-
 
 ```

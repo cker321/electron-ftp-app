@@ -1,6 +1,10 @@
 <template>
     <div class="updater">
-        <el-button icon="circle" @click="updateProgram">{{buttonText}}</el-button>
+        <el-button round
+                   icon="el-icon-refresh"
+                   @click="updateProgram">
+            {{buttonText}}
+        </el-button>
     </div>
 </template>
 <script>
@@ -35,7 +39,6 @@
                             break;
                         case 'error':
                             this.buttonText = '更新出错!';
-                            console.log(data);
                             break;
                         case 'checking-for-update':
                             this.buttonText = '检查更新中...'
@@ -53,6 +56,6 @@
     bottom: 0;
     padding: 10px;
     position: absolute;
-    border-top: 1px solid #ccc;
+    font-size: 12px !important;
 }
 </style>
