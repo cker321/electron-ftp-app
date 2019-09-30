@@ -1,8 +1,10 @@
 <template>
     <div class="updater">
         <el-button round
-                   icon="el-icon-refresh"
-                   @click="updateProgram">
+                   type="info"
+                   :disabled="loading"
+                   @click="updateProgram"
+                   :icon="loading ?'el-icon-loading' : 'el-icon-refresh'">
             {{buttonText}}
         </el-button>
     </div>
@@ -14,8 +16,9 @@
         name: 'updater',
         data () {
             return {
+                loading: false,
                 updateStatus: false,
-                buttonText: '检查更新'
+                buttonText: 'Check For Update'
             }
         },
         computed: {
@@ -31,17 +34,24 @@
             updateConfirm() {
                 ipcRenderer.on('message', (event, {message, data}) => {
                     this.updateStatus = message;
-                    console.log(message);
+                    this.loading = true;
                     console.log(data);
+                    console.log(message);
                     switch (message) {
                         case 'isUpdateNow':
-                            confirm('是否现在更新？') && ipcRenderer.send('updateNow');
+                            confirm('Want to install new package now?') && ipcRenderer.send('updateNow');
+                            this.buttonText = 'Downloaded';
+                            this.loading = false;
                             break;
                         case 'error':
-                            this.buttonText = '更新出错!';
+                            this.buttonText = 'No update';
+                            this.loading = false;
                             break;
                         case 'checking-for-update':
-                            this.buttonText = '检查更新中...'
+                            this.buttonText = 'Checking update...';
+                            break;
+                        case 'downloadProgress':
+                            this.buttonText = `downloaded: ${data.percent.toFixed(2)}% speed: ${(data.bytesPerSecond/ 1024).toFixed(2)} kb/s`;
                             break;
                     }
                 });

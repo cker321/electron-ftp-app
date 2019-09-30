@@ -102,7 +102,8 @@ import { autoUpdater } from 'electron-updater'
 // app.on('ready', () => {
 //   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 // })
-const feedUrl = 'http://localhost:88'; // 更新包位置
+// const feedUrl = 'http://localhost:88'; // 更新包位置
+const feedUrl = 'http://10.128.18.27:10000'; // 更新包位置
 // const feedUrl = `https://github.com/cker321/electron-ftp-app/releases/download/latest/`; // 更新包位置
 // 主进程监听渲染进程传来的信息
 ipcMain.on('update', (e, arg) => {

@@ -2,9 +2,14 @@
     <div class="folder"
          v-loading="loading">
         <div class="host">
-            <el-tag type="success" closable @close="logOut">已连接至：{{host}}</el-tag>
+            <el-tag type="success" closable @close="logOut">Connected to：{{host}}</el-tag>
         </div>
         <div class="currentPath">
+            <el-button type="text" disabled>Root</el-button>
+            <span class="chevron">
+                    <i class="fa fa-chevron-right" style="font-size: 12px; padding: 0 5px"></i>
+            </span>
+            {{newCurrentPath}}
             <span v-for="(item, key) in newCurrentPath">
                 <el-button type="text"
                            :disabled="item === 'dev' || item === ''"
@@ -16,10 +21,10 @@
         </div>
         <div class="toolBar">
             <el-button type="text" style="margin-right: 10px;" icon="fa fa-toggle-up" @click="back"
-                       :disabled="newCurrentPath.length <= 3"> 向上一级
+                       :disabled="newCurrentPath.length <= 3"> Backward
             </el-button>
-            <el-button type="text" style="margin-right: 10px;" icon="fa fa-folder" @click="addFolder"> 新建文件夹</el-button>
-            <el-button type="text" icon="fa fa-cloud-upload" @click="addFile"> 上传文件</el-button>
+            <el-button type="text" style="margin-right: 10px;" icon="fa fa-folder" @click="addFolder"> New Folder</el-button>
+            <el-button type="text" icon="fa fa-cloud-upload" @click="addFile"> Update New File</el-button>
         </div>
         <el-table
                 :data="tableData"

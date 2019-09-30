@@ -18,7 +18,7 @@
         <!--登录ftp-->
         <div class="main-content"
              v-loading="loading"
-             element-loading-text="正在登录到FTP服务器，请稍等...">
+             element-loading-text="connect to ftp server，plz wait...">
             <div v-show="!isLogin" class="logo">
                 <img class="gray" src="./application.png" width="50" alt="">
             </div>
@@ -30,44 +30,44 @@
                      label-width="80px">
                 <el-row :gutter="20">
                     <el-col :span="6">
-                        <el-form-item label="FTP地址"
+                        <el-form-item label="Host"
                                       prop="host"
-                                      :rules="{required: true, message: 'IP不能为空', trigger: 'blur'}">
-                            <el-input v-model="form.host" placeholder="请输入IP"></el-input>
+                                      :rules="{required: true, message: 'Please input host address', trigger: 'blur'}">
+                            <el-input v-model="form.host" placeholder="Please input host address"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="用户名"
+                        <el-form-item label="User"
                                       prop="user"
-                                      :rules="{required: true, message: '用户名不能为空', trigger: 'blur'}">
-                            <el-input v-model="form.user" placeholder="请输入用户名"></el-input>
+                                      :rules="{required: true, message: 'Please input username', trigger: 'blur'}">
+                            <el-input v-model="form.user" placeholder="Please input username"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="密码"
+                        <el-form-item label="Password"
                                       prop="password"
-                                      :rules="{required: true, message: '密码不能为空', trigger: 'blur'}">
-                            <el-input v-model="form.password" placeholder="请输入密码" type="password"></el-input>
+                                      :rules="{required: true, message: 'Please input password', trigger: 'blur'}">
+                            <el-input v-model="form.password" placeholder="Please input password" type="password"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="6">
-                        <el-form-item label="端口"
+                        <el-form-item label="Port"
                                       prop="port"
-                                      :rules="{required: true, message: '端口不能为空', trigger: 'blur'}">
-                            <el-input v-model="form.port" placeholder="请输入端口"></el-input>
+                                      :rules="{required: true, message: 'Please input port number', trigger: 'blur'}">
+                            <el-input v-model="form.port" placeholder="Please input port number"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row class="tr">
                     <el-form-item>
-                        <el-button type="primary" plain @click="sendConnect">连接</el-button>
+                        <el-button type="primary" plain @click="sendConnect">Connect</el-button>
                         <!--<el-button type="primary" plain @click="updateProgram">updateProgram</el-button>-->
                     </el-form-item>
                 </el-row>
             </el-form>
             <folder v-show="isLogin"
                     ref="folder"
-                    :host="host"
+                    :host="form.host"
                     :port="port"
                     :isLogin="isLogin"
                     :defaultData="folderData"
