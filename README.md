@@ -4,6 +4,9 @@
 > Electron + Vue-Cli + Node.js + FTP desktop application
 >
 ![N|Solid](https://github.com/cker321/electron-ftp-app/blob/master/static/alook.png?raw=true)
+#### Download This APP
+
+just click [here](https://github.com/cker321/electron-ftp-app/releases/download/latest/Ftp-File-Transfer.Setup.4.1.6.exe)
 
 #### Build Setup
 
