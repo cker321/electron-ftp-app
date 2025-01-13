@@ -32,14 +32,14 @@ function createWindow () {
     height: 562.5,
     useContentSize: true,
     width: 1000,
-    // autoHideMenuBar: true,
     frame: true,
-    // transparent: true,
     icon: require('path').join(__dirname, icoUrl),
-    backgroundColor: '#fff'
-    // alwaysOnTop: true,
-    // resizable: false,
-    // webPreferences: {webSecurity: false}
+    backgroundColor: '#fff',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true
+    }
   })
   mainWindow.loadURL(winURL)
 
@@ -253,4 +253,3 @@ function sendUserInfo(message, data) {
 ipcMain.on('userInfoGet', (e, arg) => {
   sendUserInfo(infoEvent, queryParam)
 });
-

@@ -9,6 +9,7 @@ const webpack = require('webpack')
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 
 let mainConfig = {
+  mode: process.env.NODE_ENV || 'development',
   entry: {
     main: path.join(__dirname, '../src/main/index.js')
   },
@@ -46,20 +47,6 @@ let mainConfig = {
   target: 'electron-main'
 }
 
-/**
- * Adjust mainConfig for development settings
- */
-if (process.env.NODE_ENV !== 'production') {
-  mainConfig.plugins.push(
-    new webpack.DefinePlugin({
-      '__static': `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`
-    })
-  )
-}
-
-/**
- * Adjust mainConfig for production settings
- */
 if (process.env.NODE_ENV === 'production') {
   mainConfig.plugins.push(
     new BabiliWebpackPlugin(),
