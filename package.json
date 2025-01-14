@@ -1,38 +1,60 @@
 {
-  "name": "electron-vue-vite",
-  "version": "28.1.0",
-  "main": "dist-electron/main/index.js",
-  "description": "Really simple Electron + Vue + Vite boilerplate.",
-  "author": "草鞋没号 <308487730@qq.com>",
-  "license": "MIT",
+  "name": "FtpFileTransfer",
+  "version": "4.1.5",
+  "description": "An electron-vue ftp upload file project",
+  "author": "CloudWalk <zhurui@cloudwalk.cn>",
   "private": true,
-  "keywords": [
-    "electron",
-    "rollup",
-    "vite",
-    "vue3",
-    "vue"
-  ],
-  "debug": {
-    "env": {
-      "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
-    }
-  },
-  "type": "module",
+  "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.6.5",
+    "element-plus": "^2.4.4",
+    "ftp": "^0.3.10",
+    "js-md5": "^0.7.3",
+    "multer": "^1.4.5-lts.1",
+    "nodejs-websocket": "^1.7.2",
+    "pinia": "^2.1.7",
+    "vue-router": "^4.2.5"
+  },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@types/node": "^20.11.5",
+    "@vitejs/plugin-vue": "^4.3.3",
     "electron": "^29.1.1",
     "electron-builder": "^24.13.3",
-    "typescript": "^5.4.2",
-    "vite": "^5.1.5",
+    "less": "^4.2.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vue": "^3.4.21",
     "vue-tsc": "^2.0.6"
+  },
+  "build": {
+    "productName": "Ftp-File-Transfer",
+    "appId": "com.example.yourapp",
+    "directories": {
+      "output": "build"
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://localhost:8080/version/"
+      }
+    ],
+    "mac": {
+      "icon": "build/icons/icon.icns"
+    },
+    "win": {
+      "icon": "build/icons/logo.ico"
+    },
+    "linux": {
+      "icon": "build/icons"
+    }
   }
 }

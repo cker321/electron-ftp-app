@@ -4,10 +4,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script>
+export default {
+  name: 'cloudwalk-ftp-app'
+}
 </script>
 
 <style>
+@import './assets/font-awsome/css/font-awesome.min.css';
+
 body {
   margin: 0;
   padding: 0;

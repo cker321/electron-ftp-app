@@ -5,9 +5,12 @@
 </template>
 
 <script setup lang="ts">
+// Vue 3 Composition API
 </script>
 
 <style>
+@import './assets/font-awsome/css/font-awesome.min.css';
+
 body {
   margin: 0;
   padding: 0;
